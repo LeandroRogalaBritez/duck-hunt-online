@@ -1,0 +1,50 @@
+[gd_scene load_steps=11 format=3 uid="uid://c3c7dgbuvgoqt"]
+
+[ext_resource type="AudioStream" uid="uid://bflr15vgekx6a" path="res://assets/sons/banjo_bg_loop.mp3" id="1_8tp85"]
+[ext_resource type="AudioStream" uid="uid://dpwgny8sgyc6u" path="res://assets/sons/dog_bark.mp3" id="2_yjbt4"]
+[ext_resource type="AudioStream" uid="uid://dr7o2cfse8li4" path="res://assets/sons/cao_captura.wav" id="3_fs7ce"]
+[ext_resource type="AudioStream" uid="uid://d2xnuxap2r6l2" path="res://assets/sons/cao_rindo.wav" id="4_1kie0"]
+[ext_resource type="AudioStream" uid="uid://dqyfbb1nb5jlb" path="res://assets/sons/round.wav" id="5_4bqc2"]
+[ext_resource type="AudioStream" uid="uid://cncl7bdwmmx55" path="res://assets/sons/pato.wav" id="6_m3ts8"]
+[ext_resource type="AudioStream" uid="uid://byie1ghqps4y4" path="res://assets/sons/shotgun_shot.mp3" id="7_11k4a"]
+[ext_resource type="AudioStream" uid="uid://brjs0siqubkvx" path="res://assets/sons/pond_atmosphere.mp3" id="8_kqtw3"]
+[ext_resource type="AudioStream" uid="uid://deg42tvs5ex5o" path="res://assets/sons/shotgun_reload.mp3" id="9_4mi6s"]
+[ext_resource type="AudioStream" uid="uid://by4xo2m02i7m0" path="res://assets/sons/bell.mp3" id="10_hgb84"]
+
+[node name="Audio" type="Node2D"]
+
+[node name="Entrada" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("1_8tp85")
+parameters/looping = true
+
+[node name="Dog" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_yjbt4")
+
+[node name="Ganhou" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_fs7ce")
+
+[node name="Perdeu" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_1kie0")
+
+[node name="Round" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_4bqc2")
+
+[node name="Pato" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_m3ts8")
+
+[node name="Tiro" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_11k4a")
+
+[node name="Latida" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_yjbt4")
+
+[node name="Atmosfera" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_kqtw3")
+volume_db = -12.18
+parameters/looping = false
+
+[node name="TiroRecarregar" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("9_4mi6s")
+
+[node name="Sino" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("10_hgb84")

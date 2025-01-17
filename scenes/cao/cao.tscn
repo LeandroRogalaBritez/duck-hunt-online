@@ -1,0 +1,313 @@
+[gd_scene load_steps=22 format=3 uid="uid://dtgi5ovl382nb"]
+
+[ext_resource type="Script" path="res://scenes/cao/cao.gd" id="1_yfwb0"]
+[ext_resource type="Texture2D" uid="uid://cewcxsovjsu4r" path="res://assets/PikPng.com_duck-hunt-png_1397308.png" id="4_ljgb6"]
+[ext_resource type="PackedScene" uid="uid://c3c7dgbuvgoqt" path="res://scenes/audio/audio.tscn" id="5_6hqga"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b5qt3"]
+atlas = ExtResource("4_ljgb6")
+region = Rect2(0, 0, 121, 91)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gj2o4"]
+atlas = ExtResource("4_ljgb6")
+region = Rect2(121, 0, 121, 91)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qwrwj"]
+atlas = ExtResource("4_ljgb6")
+region = Rect2(242, 0, 121, 91)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vu50w"]
+atlas = ExtResource("4_ljgb6")
+region = Rect2(363, 0, 121, 91)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pulbg"]
+atlas = ExtResource("4_ljgb6")
+region = Rect2(484, 0, 121, 91)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l0p8k"]
+atlas = ExtResource("4_ljgb6")
+region = Rect2(625, 98, 125, 98)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q2o1r"]
+atlas = ExtResource("4_ljgb6")
+region = Rect2(363, 102, 121, 102)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jlo0f"]
+atlas = ExtResource("4_ljgb6")
+region = Rect2(484, 102, 121, 102)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j58w4"]
+atlas = ExtResource("4_ljgb6")
+region = Rect2(0, 102, 123, 102)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r32j3"]
+atlas = ExtResource("4_ljgb6")
+region = Rect2(123, 102, 123, 102)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_imc0f"]
+atlas = ExtResource("4_ljgb6")
+region = Rect2(246, 102, 123, 102)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_jrnkr"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b5qt3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gj2o4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qwrwj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vu50w")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pulbg")
+}],
+"loop": true,
+"name": &"andando",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l0p8k")
+}],
+"loop": false,
+"name": &"ganhou",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q2o1r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jlo0f")
+}],
+"loop": true,
+"name": &"perdeu",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j58w4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r32j3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_imc0f")
+}],
+"loop": false,
+"name": &"pulando",
+"speed": 5.0
+}]
+
+[sub_resource type="Animation" id="Animation_woe83"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimatedSprite2D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AnimatedSprite2D:z_index")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_1ce8o"]
+resource_name = "ganhou"
+length = 0.5
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"ganhou"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimatedSprite2D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, -80)]
+}
+
+[sub_resource type="Animation" id="Animation_nfxi1"]
+resource_name = "perdeu"
+length = 0.5
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"perdeu"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimatedSprite2D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, -80)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AnimatedSprite2D:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [0, 1, 0]
+}
+
+[sub_resource type="Animation" id="Animation_v1fbf"]
+resource_name = "pulando"
+length = 0.6
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"pulando"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimatedSprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [0, 1, 2]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AnimatedSprite2D:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(10, -100), Vector2(10, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("AnimatedSprite2D:z_index")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.3),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [-3]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_dbqfl"]
+_data = {
+"RESET": SubResource("Animation_woe83"),
+"ganhou": SubResource("Animation_1ce8o"),
+"perdeu": SubResource("Animation_nfxi1"),
+"pulando": SubResource("Animation_v1fbf")
+}
+
+[sub_resource type="GDScript" id="GDScript_ll0cj"]
+script/source = "extends Node2D
+
+@onready var pato = $Pato
+func _ready() -> void:
+	pass 
+
+func _process(delta: float) -> void:
+	pass
+
+func _tocar_pato():
+	pato.play()
+"
+
+[node name="Cao" type="Node2D"]
+script = ExtResource("1_yfwb0")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_jrnkr")
+animation = &"pulando"
+autoplay = "andando"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_dbqfl")
+}
+
+[node name="Audio" parent="." instance=ExtResource("5_6hqga")]
+script = SubResource("GDScript_ll0cj")
+
+[node name="TempoLatida" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
+[connection signal="timeout" from="TempoLatida" to="." method="_on_tempo_latida_timeout"]
+
+[editable path="Audio"]

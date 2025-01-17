@@ -12,7 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://carmhcxltxfnw" path="res://assets/pato/morte/2.png" id="10_jjl6b"]
 [ext_resource type="Texture2D" uid="uid://xj88jauwcslu" path="res://assets/pato/morte/3.png" id="11_ml861"]
 [ext_resource type="Texture2D" uid="uid://cgjdk42qfwyo5" path="res://assets/pato/susto.png" id="12_c1o12"]
-[ext_resource type="AudioStream" uid="uid://cncl7bdwmmx55" path="res://assets/sons/pato.wav" id="13_s6nl1"]
+[ext_resource type="PackedScene" uid="uid://c3c7dgbuvgoqt" path="res://scenes/audio/audio.tscn" id="14_a07jx"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_3wdyn"]
 radius = 53.0848
@@ -85,7 +85,22 @@ sprite_frames = SubResource("SpriteFrames_223sk")
 animation = &"susto"
 autoplay = "cima"
 
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("13_s6nl1")
+[node name="Audio" parent="." instance=ExtResource("14_a07jx")]
+
+[node name="Label" type="Label" parent="."]
+visible = false
+offset_left = -23.0
+offset_top = -81.0
+offset_right = 17.0
+offset_bottom = -58.0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TentativaDeBounce" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="timeout" from="TentativaDeBounce" to="." method="_on_tentativa_de_bounce_timeout"]
+
+[editable path="Audio"]
