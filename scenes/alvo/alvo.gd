@@ -17,7 +17,10 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	set_multiplayer_authority(name.to_int())
-	label.text = GameManager._get_nome(name)
+	if GameManager._multiplayer:
+		label.text = GameManager._get_nome(name)
+		label.visible = true
+		return
 
 func _process(delta: float) -> void:
 	if is_multiplayer_authority():

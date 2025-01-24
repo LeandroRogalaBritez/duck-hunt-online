@@ -35,6 +35,8 @@ var quantidade_bounce_top = 0
 @onready var bounce_down_area = $BounceDown/Down
 var patos_que_tocou = 0
 
+signal teste
+
 @rpc("any_peer", "call_local", "reliable")
 func _create_alvos() -> void:
 	if multiplayer.is_server():
@@ -45,7 +47,7 @@ func _create_alvos() -> void:
 
 func _ready() -> void:
 	if multiplayer.is_server():
-		pass
+		GameManager.player_desconectou.connect(_on_player_desconectou)
 	#var bus_index = AudioServer.get_bus_index("Master")
 	#AudioServer.set_bus_volume_db(bus_index, -10000)
 	
@@ -242,3 +244,9 @@ func _on_bounce_down_body_entered(body: Node2D) -> void:
 				bounce_top_area.disabled = true
 				bounce_top_area.call_deferred("set_disabled", true)
 		body._bounce_y()
+
+func _on_player_desconectou(player_id) -> void:
+	for a in $Alvos.get_children():
+		if a.name == str(player_id):
+			a.queue_free()
+			return
