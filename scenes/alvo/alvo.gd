@@ -17,7 +17,7 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	set_multiplayer_authority(name.to_int())
-	label.text = name
+	label.text = GameManager._get_nome(name)
 
 func _process(delta: float) -> void:
 	if is_multiplayer_authority():
@@ -31,7 +31,7 @@ func _process(delta: float) -> void:
 			if pode_atirar:
 				main._on_alvo_atirou()
 				pode_atirar = false
-				audio.play()
+				_on_alvo_atirou.rpc()
 				timer_recarga.start()
 				if pato_na_mira != null and pato_na_mira.vivo:
 					pato_na_mira.morreu.rpc()
@@ -42,6 +42,10 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 
 func _on_area_2d_body_exited(body: Node2D) -> void:
 	pato_na_mira = null
+	
+@rpc("any_peer", "call_local")
+func _on_alvo_atirou() -> void:
+	audio.play()
 
 func _on_timer_recarga_timeout() -> void:
 	audio_recarga.play()

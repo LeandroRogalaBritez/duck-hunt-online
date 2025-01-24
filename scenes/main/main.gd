@@ -46,8 +46,8 @@ func _create_alvos() -> void:
 func _ready() -> void:
 	if multiplayer.is_server():
 		pass
-		#var bus_index = AudioServer.get_bus_index("Master")
-		#AudioServer.set_bus_volume_db(bus_index, -10000)
+	#var bus_index = AudioServer.get_bus_index("Master")
+	#AudioServer.set_bus_volume_db(bus_index, -10000)
 	
 	_create_alvos.rpc()
 	

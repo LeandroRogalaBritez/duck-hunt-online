@@ -74,9 +74,8 @@ offset_left = 15.0
 offset_top = 117.0
 offset_right = 171.0
 offset_bottom = 148.0
-text = "NAO FUNCIONA"
+text = "Player1"
 placeholder_text = "Player1"
-editable = false
 
 [node name="Host" type="Button" parent="Panel"]
 layout_mode = 0
