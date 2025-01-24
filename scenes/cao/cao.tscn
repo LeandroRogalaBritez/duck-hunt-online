@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://dtgi5ovl382nb"]
+[gd_scene load_steps=23 format=3 uid="uid://dtgi5ovl382nb"]
 
 [ext_resource type="Script" path="res://scenes/cao/cao.gd" id="1_yfwb0"]
 [ext_resource type="Texture2D" uid="uid://cewcxsovjsu4r" path="res://assets/PikPng.com_duck-hunt-png_1397308.png" id="4_ljgb6"]
@@ -288,12 +288,41 @@ func _tocar_pato():
 	pato.play()
 "
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_o0sdu"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("AnimationPlayer:current_animation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("AnimatedSprite2D:animation")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("AnimatedSprite2D:flip_h")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath(".:visible")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+properties/5/path = NodePath("AnimatedSprite2D:frame")
+properties/5/spawn = true
+properties/5/replication_mode = 1
+properties/6/path = NodePath(".:process_mode")
+properties/6/spawn = true
+properties/6/replication_mode = 1
+properties/7/path = NodePath("AnimatedSprite2D:position")
+properties/7/spawn = true
+properties/7/replication_mode = 1
+properties/8/path = NodePath("AnimatedSprite2D:visible")
+properties/8/spawn = true
+properties/8/replication_mode = 1
+
 [node name="Cao" type="Node2D"]
 script = ExtResource("1_yfwb0")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_jrnkr")
-animation = &"pulando"
+animation = &"perdeu"
 autoplay = "andando"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -306,6 +335,9 @@ script = SubResource("GDScript_ll0cj")
 
 [node name="TempoLatida" type="Timer" parent="."]
 one_shot = true
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_o0sdu")
 
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
 [connection signal="timeout" from="TempoLatida" to="." method="_on_tempo_latida_timeout"]

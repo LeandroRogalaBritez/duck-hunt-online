@@ -1,0 +1,116 @@
+[gd_scene load_steps=2 format=3 uid="uid://cdlr0shfglc0q"]
+
+[ext_resource type="Script" path="res://scenes/lobby/lobby.gd" id="1_8te2m"]
+
+[node name="Lobby" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_8te2m")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -385.0
+offset_top = -360.0
+offset_right = 385.0
+offset_bottom = 360.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LabelIp" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 11.0
+offset_right = 53.0
+offset_bottom = 34.0
+text = "IP"
+
+[node name="LineEditIp" type="LineEdit" parent="Panel"]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 42.0
+offset_right = 128.0
+offset_bottom = 73.0
+text = "127.0.0.1"
+placeholder_text = "127.0.0.1"
+
+[node name="LabelNome" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 82.0
+offset_right = 53.0
+offset_bottom = 105.0
+text = "Nome
+"
+
+[node name="LineEditNome" type="LineEdit" parent="Panel"]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 117.0
+offset_right = 171.0
+offset_bottom = 148.0
+text = "NAO FUNCIONA"
+placeholder_text = "Player1"
+editable = false
+
+[node name="Host" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 163.0
+offset_top = 40.0
+offset_right = 207.0
+offset_bottom = 71.0
+text = "Host"
+
+[node name="Entrar" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 242.0
+offset_top = 42.0
+offset_right = 299.0
+offset_bottom = 73.0
+text = "Entrar"
+
+[node name="Desconectar" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 335.0
+offset_top = 41.0
+offset_right = 440.0
+offset_bottom = 72.0
+text = "Desconectar"
+
+[node name="Fechar" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 714.0
+offset_top = 10.0
+offset_right = 752.0
+offset_bottom = 41.0
+text = "Sair"
+
+[node name="PlayerList" type="ItemList" parent="Panel"]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 177.0
+offset_right = 341.0
+offset_bottom = 699.0
+
+[node name="Iniciar" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 235.0
+offset_top = 115.0
+offset_right = 292.0
+offset_bottom = 146.0
+text = "Iniciar
+"
+
+[connection signal="pressed" from="Panel/Host" to="." method="_on_host_pressed"]
+[connection signal="pressed" from="Panel/Entrar" to="." method="_on_entrar_pressed"]
+[connection signal="pressed" from="Panel/Desconectar" to="." method="_on_desconectar_pressed"]
+[connection signal="pressed" from="Panel/Fechar" to="." method="_on_fechar_pressed"]
+[connection signal="pressed" from="Panel/Iniciar" to="." method="_on_iniciar_pressed"]

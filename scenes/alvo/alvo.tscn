@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://flxjf3pq8dgn"]
+[gd_scene load_steps=6 format=3 uid="uid://flxjf3pq8dgn"]
 
 [ext_resource type="Texture2D" uid="uid://cgcyi5astxucr" path="res://assets/cenario/alvo.png" id="1_gi4ge"]
 [ext_resource type="Script" path="res://scenes/alvo/alvo.gd" id="1_y1iiq"]
@@ -6,6 +6,11 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lgth6"]
 size = Vector2(70, 66)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qodot"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
 
 [node name="Alvo" type="Node2D"]
 script = ExtResource("1_y1iiq")
@@ -23,6 +28,15 @@ shape = SubResource("RectangleShape2D_lgth6")
 [node name="TimerRecarga" type="Timer" parent="."]
 wait_time = 0.112
 one_shot = true
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_qodot")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -21.0
+offset_top = -62.0
+offset_right = 19.0
+offset_bottom = -39.0
 
 [connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
 [connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]

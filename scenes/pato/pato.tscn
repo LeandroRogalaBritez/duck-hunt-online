@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://dofix5va2nyot"]
+[gd_scene load_steps=17 format=3 uid="uid://dofix5va2nyot"]
 
 [ext_resource type="Script" path="res://scenes/pato/pato.gd" id="1_fu5k7"]
 [ext_resource type="Texture2D" uid="uid://b4tv7c5h47djf" path="res://assets/pato/cima/sprite_0.png" id="2_n6o6t"]
@@ -73,6 +73,26 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_74c4n"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("AnimatedSprite2D:animation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("AnimatedSprite2D:frame")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("AnimatedSprite2D:flip_h")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath("Label:text")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+properties/5/path = NodePath(".:pontuacao")
+properties/5/spawn = true
+properties/5/replication_mode = 1
+
 [node name="Pato" type="CharacterBody2D"]
 collision_mask = 0
 script = ExtResource("1_fu5k7")
@@ -99,6 +119,9 @@ vertical_alignment = 1
 [node name="TentativaDeBounce" type="Timer" parent="."]
 wait_time = 2.0
 autostart = true
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_74c4n")
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="timeout" from="TentativaDeBounce" to="." method="_on_tentativa_de_bounce_timeout"]

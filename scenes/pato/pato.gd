@@ -7,12 +7,13 @@ var _direcao_y: int = -1
 var vivo: bool = true
 @onready var audio = $Audio/Pato
 @onready var label = $Label
-var pontuacao
+@export var pontuacao = "0" 
 var quantidade_bounce_top
 
 func _ready() -> void:
-	_mover_direcao_aleatoria_x()
-	_seleciona_animacao()
+	if multiplayer.is_server():
+		_mover_direcao_aleatoria_x()
+		_seleciona_animacao()
 	audio.play()
 	
 func _seleciona_animacao() -> void:
@@ -26,15 +27,17 @@ func _seleciona_animacao() -> void:
 		return
 
 func _physics_process(delta: float) -> void:
-	var direcao = Vector2(_direcao_x, _direcao_y).normalized()
-	velocity.y = direcao.y * _velocidade
-	velocity.x = direcao.x * _velocidade
+	if multiplayer.is_server():
+		var direcao = Vector2(_direcao_x, _direcao_y).normalized()
+		velocity.y = direcao.y * _velocidade
+		velocity.x = direcao.x * _velocidade
 	
-	move_and_slide()
+		move_and_slide()
 
 func _mover_direcao_aleatoria_x() -> void:
 	_direcao_x = [-5, 5].pick_random()
 
+@rpc("any_peer", "call_local")
 func morreu() -> void:
 	label.text = pontuacao
 	label.visible = true

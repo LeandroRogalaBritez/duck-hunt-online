@@ -1,0 +1,273 @@
+[gd_scene load_steps=12 format=3 uid="uid://c844lc5586lil"]
+
+[ext_resource type="Script" path="res://scenes/main/main.gd" id="1_daguo"]
+[ext_resource type="Texture2D" uid="uid://do4r6wafm37o4" path="res://assets/cenario/cenariofrente.png" id="3_cv3x2"]
+[ext_resource type="Texture2D" uid="uid://cxvit6ay7cdxh" path="res://assets/cenario/cenariotras.png" id="4_oswmw"]
+[ext_resource type="PackedScene" uid="uid://dtgi5ovl382nb" path="res://scenes/cao/cao.tscn" id="5_ml20b"]
+[ext_resource type="PackedScene" uid="uid://c3c7dgbuvgoqt" path="res://scenes/audio/audio.tscn" id="6_1vo7a"]
+[ext_resource type="Texture2D" uid="uid://b33thehnb4bbd" path="res://assets/Duck_Hunt_Remade_transparent_without_clouds.png" id="7_kudq8"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ky881"]
+size = Vector2(1214, 42)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uvj0n"]
+size = Vector2(66, 720)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0qx5o"]
+size = Vector2(769.5, 81)
+
+[sub_resource type="GDScript" id="GDScript_ll0cj"]
+script/source = "extends Node2D
+
+@onready var pato = $Pato
+func _ready() -> void:
+	pass 
+
+func _process(delta: float) -> void:
+	pass
+
+func _tocar_pato():
+	pato.play()
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mbk4c"]
+size = Vector2(41.3715, 27)
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_daguo")
+
+[node name="HudGame" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 768.0
+offset_bottom = 720.0
+
+[node name="Tiro" type="Control" parent="HudGame"]
+anchors_preset = 0
+offset_left = -2.0
+offset_top = 77.0
+offset_right = 38.0
+offset_bottom = 117.0
+
+[node name="BoxTiro" type="Sprite2D" parent="HudGame/Tiro"]
+z_index = 999
+position = Vector2(72, 600)
+scale = Vector2(2.48433, 2.14626)
+texture = ExtResource("7_kudq8")
+region_enabled = true
+region_rect = Rect2(404, 210, 29, 21)
+
+[node name="LabelShot" type="Sprite2D" parent="HudGame/Tiro"]
+z_index = 999
+position = Vector2(74, 610)
+scale = Vector2(2.48433, 2.14626)
+texture = ExtResource("7_kudq8")
+region_enabled = true
+region_rect = Rect2(498, 270, 26, 8)
+
+[node name="Bala" type="Sprite2D" parent="HudGame/Tiro"]
+visible = false
+z_index = 999
+position = Vector2(52, 591)
+scale = Vector2(2.48433, 2.14626)
+texture = ExtResource("7_kudq8")
+region_enabled = true
+region_rect = Rect2(501, 262, 4, 7)
+
+[node name="Patos" type="Control" parent="HudGame"]
+anchors_preset = 0
+offset_left = -2.0
+offset_top = 77.0
+offset_right = 38.0
+offset_bottom = 117.0
+
+[node name="BoxPato" type="Sprite2D" parent="HudGame/Patos"]
+z_index = 999
+position = Vector2(383.45, 599.533)
+scale = Vector2(1.7, 2.146)
+texture = ExtResource("7_kudq8")
+region_enabled = true
+region_rect = Rect2(444, 210, 117, 21)
+
+[node name="LabelPato" type="Sprite2D" parent="HudGame/Patos"]
+z_index = 999
+position = Vector2(322.45, 599.533)
+scale = Vector2(2.48433, 2.14626)
+texture = ExtResource("7_kudq8")
+region_enabled = true
+region_rect = Rect2(526, 250, 24, 10)
+
+[node name="Pato" type="Sprite2D" parent="HudGame/Patos"]
+z_index = 999
+position = Vector2(375.45, 600.533)
+scale = Vector2(2.48433, 2.14626)
+texture = ExtResource("7_kudq8")
+region_enabled = true
+region_rect = Rect2(559, 253, 7, 7)
+
+[node name="Score" type="Control" parent="HudGame"]
+anchors_preset = 0
+offset_left = -2.0
+offset_top = 77.0
+offset_right = 38.0
+offset_bottom = 117.0
+
+[node name="BoxScore" type="Sprite2D" parent="HudGame/Score"]
+z_index = 999
+position = Vector2(682, 600)
+scale = Vector2(2.48433, 2.14626)
+texture = ExtResource("7_kudq8")
+region_enabled = true
+region_rect = Rect2(572, 210, 53, 21)
+
+[node name="LabelScore" type="Label" parent="HudGame/Score"]
+z_index = 999
+layout_mode = 0
+offset_left = 658.0
+offset_top = 599.0
+offset_right = 709.0
+offset_bottom = 622.0
+text = "SCORE"
+
+[node name="LabelPontuacao" type="Label" parent="HudGame/Score"]
+z_index = 999
+layout_mode = 0
+offset_left = 642.0
+offset_top = 580.0
+offset_right = 725.0
+offset_bottom = 603.0
+text = "000000000"
+
+[node name="Alvos" type="Node2D" parent="."]
+
+[node name="SpawPato" type="Marker2D" parent="."]
+position = Vector2(384, 483)
+
+[node name="SpawPato2" type="Marker2D" parent="."]
+position = Vector2(106, 485)
+
+[node name="SpawPato3" type="Marker2D" parent="."]
+position = Vector2(649, 490)
+
+[node name="Cenario" type="Node2D" parent="."]
+
+[node name="Chao" type="Sprite2D" parent="Cenario"]
+z_index = 3
+texture = ExtResource("3_cv3x2")
+centered = false
+
+[node name="Fundo" type="Sprite2D" parent="Cenario"]
+z_index = -3
+texture = ExtResource("4_oswmw")
+centered = false
+
+[node name="Patos" type="Node2D" parent="."]
+
+[node name="Topo" type="Area2D" parent="."]
+position = Vector2(266, -65)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Topo"]
+position = Vector2(131, -78)
+shape = SubResource("RectangleShape2D_ky881")
+
+[node name="Lados" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Lados"]
+position = Vector2(-33, 361)
+shape = SubResource("RectangleShape2D_uvj0n")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Lados"]
+position = Vector2(803, 361)
+shape = SubResource("RectangleShape2D_uvj0n")
+
+[node name="Baixo" type="Area2D" parent="."]
+z_index = 99
+position = Vector2(0, -81)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Baixo"]
+position = Vector2(384, 762)
+shape = SubResource("RectangleShape2D_0qx5o")
+
+[node name="Cao" parent="." instance=ExtResource("5_ml20b")]
+z_index = 5
+position = Vector2(61, 513)
+
+[node name="TimerIniciaRound" type="Timer" parent="."]
+wait_time = 1.4
+one_shot = true
+
+[node name="FinalizaRound" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+
+[node name="Audio" parent="." instance=ExtResource("6_1vo7a")]
+script = SubResource("GDScript_ll0cj")
+
+[node name="HudInicial" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 768.0
+offset_bottom = 720.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HudInicial"]
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -125.0
+offset_top = -11.5
+offset_right = 125.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Iniciar" type="Button" parent="HudInicial/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "APERTE PARA COMEÇAR"
+
+[node name="BounceTop" type="Area2D" parent="."]
+
+[node name="Top" type="CollisionShape2D" parent="BounceTop"]
+position = Vector2(386.9, 16.5)
+scale = Vector2(18.52, 1)
+shape = SubResource("RectangleShape2D_mbk4c")
+disabled = true
+
+[node name="BounceDown" type="Area2D" parent="."]
+position = Vector2(0, 438)
+
+[node name="Down" type="CollisionShape2D" parent="BounceDown"]
+position = Vector2(386.9, 16.5)
+scale = Vector2(18.52, 1)
+shape = SubResource("RectangleShape2D_mbk4c")
+disabled = true
+
+[node name="MultiplayerSpawnerAlvo" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://scenes/alvo/alvo.tscn")
+spawn_path = NodePath("../Alvos")
+
+[node name="MultiplayerSpawnerPatos" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://scenes/pato/pato.tscn")
+spawn_path = NodePath("../Patos")
+
+[node name="MultiplayerSpawnerCao" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://scenes/cao/cao.tscn")
+spawn_path = NodePath("..")
+
+[connection signal="body_entered" from="Topo" to="." method="_on_topo_body_entered"]
+[connection signal="body_entered" from="Lados" to="." method="_on_lados_body_entered"]
+[connection signal="body_entered" from="Baixo" to="." method="_on_baixo_body_entered"]
+[connection signal="timeout" from="TimerIniciaRound" to="." method="_on_timer_inicia_round_timeout"]
+[connection signal="timeout" from="FinalizaRound" to="." method="_on_finaliza_round_timeout"]
+[connection signal="pressed" from="HudInicial/VBoxContainer/Iniciar" to="." method="_on_iniciar_pressed"]
+[connection signal="body_entered" from="BounceTop" to="." method="_on_bounce_top_body_entered"]
+[connection signal="body_entered" from="BounceDown" to="." method="_on_bounce_down_body_entered"]
+
+[editable path="Audio"]
