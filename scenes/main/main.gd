@@ -241,6 +241,8 @@ func _on_alvo_matou_pato() -> void:
 	pato_hud.region_rect = current_region
 
 func _on_bounce_top_body_entered(body: Node2D) -> void:
+	if body.pode_fugir:
+		return
 	if multiplayer.is_server():
 		bounce_down_area.disabled = false
 		bounce_down_area.call_deferred("set_disabled", false)
@@ -254,8 +256,6 @@ func _on_bounce_down_body_entered(body: Node2D) -> void:
 			if patos_que_tocou >= patos_gerados:
 				bounce_down_area.disabled = true
 				bounce_down_area.call_deferred("set_disabled", true)
-				bounce_top_area.disabled = true
-				bounce_top_area.call_deferred("set_disabled", true)
 		body._bounce_y()
 
 func _on_player_desconectou(player_id) -> void:

@@ -249,7 +249,6 @@ text = "APERTE PARA COMEÇAR"
 position = Vector2(386.9, 16.5)
 scale = Vector2(18.52, 1)
 shape = SubResource("RectangleShape2D_mbk4c")
-disabled = true
 
 [node name="BounceDown" type="Area2D" parent="."]
 position = Vector2(0, 438)

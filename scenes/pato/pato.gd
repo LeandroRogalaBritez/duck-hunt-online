@@ -12,9 +12,10 @@ var quantidade_bounce_top
 @export var _jogavel: bool
 @onready var auto_bounce = $TentativaDeBounce
 @export var pode_fugir = false
-var tempo_time_out_fugir = 7
 
 func _ready() -> void:
+	$TimerPodeFugir.start()
+	
 	if multiplayer.is_server():
 		if !_jogavel:
 			_mover_direcao_aleatoria_x()
@@ -22,8 +23,6 @@ func _ready() -> void:
 			audio.play()
 
 	if _jogavel:
-		tempo_time_out_fugir = (_velocidade / 300) * 7
-		$TimerPodeFugir.start(tempo_time_out_fugir)
 		rpc_id(name.to_int(), "_grava_propriedades", _jogavel, pontuacao, position)
 		auto_bounce.stop()
 
