@@ -34,6 +34,7 @@ var quantidade_bounce_top = 0
 @onready var bounce_top_area = $BounceTop/Top
 @onready var bounce_down_area = $BounceDown/Down
 var patos_que_tocou = 0
+var quantidade_tiros
 
 @rpc("any_peer", "call_local", "reliable")
 func _avisa_que_e_alvo() -> void:
@@ -48,6 +49,16 @@ func _avisa_que_e_pato() -> void:
 	if multiplayer.is_server():
 		GameManager._players_patos.append(str(multiplayer.get_remote_sender_id()))
 
+func _adiciona_quantidade_tiros(_quantidade_tiros) -> void:
+	quantidade_tiros = _quantidade_tiros
+	$HudGame/Tiro/Label.text = str(quantidade_tiros)
+
+@rpc("any_peer")
+func _remove_quantidade_tiros() -> void:
+	if !GameManager._alvo:
+		quantidade_tiros -= 1
+		$HudGame/Tiro/Label.text = str(quantidade_tiros)
+
 func _ready() -> void:
 	if multiplayer.is_server():
 		GameManager.player_desconectou.connect(_on_player_desconectou)
@@ -57,6 +68,7 @@ func _ready() -> void:
 	if GameManager._alvo:
 		_avisa_que_e_alvo.rpc()
 	else:
+		$HudGame/Tiro/Label.visible = true
 		_avisa_que_e_pato.rpc()
 	
 	cao.cachorro_pulou.connect(_inicia_round)
@@ -113,6 +125,8 @@ func _prepara_inicio_round() -> void:
 			baladuplicada.visible = true
 			balas_no_cartucho.append(baladuplicada)
 			$HudGame/Tiro.add_child(baladuplicada)
+	else:
+		_adiciona_quantidade_tiros($Alvos.get_children().size() * 3)
 
 func gera_patos(_quantidade: float) -> void:
 	patos_gerados = _quantidade
@@ -220,6 +234,7 @@ func _on_iniciar_pressed() -> void:
 	_start_game.rpc()
 
 func _on_alvo_atirou() -> void:
+	_remove_quantidade_tiros.rpc()
 	var bala = balas_no_cartucho.pop_back()
 	bala.queue_free()
 

@@ -85,6 +85,18 @@ texture = ExtResource("7_kudq8")
 region_enabled = true
 region_rect = Rect2(501, 262, 4, 7)
 
+[node name="Label" type="Label" parent="HudGame/Tiro"]
+visible = false
+z_index = 999
+layout_mode = 0
+offset_left = 53.0
+offset_top = 580.0
+offset_right = 93.0
+offset_bottom = 603.0
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="Patos" type="Control" parent="HudGame"]
 anchors_preset = 0
 offset_left = -2.0
