@@ -65,6 +65,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y = direcao.y * _velocidade
 		velocity.x = direcao.x * _velocidade
 		move_and_slide()
+		return
 		
 	if _jogavel and vivo and is_multiplayer_authority() and !pode_fugir:
 		var direcao = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
@@ -73,7 +74,7 @@ func _physics_process(delta: float) -> void:
 		position.x = clamp(position.x, 45, 720)
 		position.y = clamp(position.y, 55, 490)
 		_seleciona_animacao()
-		
+		return
 
 func _mover_direcao_aleatoria_x() -> void:
 	_direcao_x = [-5, 5].pick_random()

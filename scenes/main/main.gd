@@ -131,7 +131,6 @@ func gera_patos(_quantidade: float) -> void:
 		
 func _gera_pato(nome, spaws, jogavel) -> void:
 	var _pato = cena_pato.instantiate()
-	print(nome)
 	_pato.name = nome
 	_pato.pontuacao = str(pontuacao_por_pato)
 	_pato._velocidade = _pato._velocidade * multiplicador_velocidade
