@@ -116,9 +116,6 @@ func _prepara_inicio_round() -> void:
 			balas_no_cartucho.append(baladuplicada)
 			$HudGame/Tiro.add_child(baladuplicada)
 
-func _process(delta: float) -> void:
-	pass
-
 func gera_patos(_quantidade: float) -> void:
 	patos_gerados = _quantidade
 	var spaws = [spaw_pato, spaw_pato2, spaw_pato3]
@@ -129,10 +126,12 @@ func gera_patos(_quantidade: float) -> void:
 			_quantidade -= 1
 	
 	for numero in _quantidade:
-		_gera_pato("Pato_#d" % numero, spaws, false)
+		var nome_pato = "Pato_%d" % numero
+		_gera_pato(nome_pato, spaws, false)
 		
 func _gera_pato(nome, spaws, jogavel) -> void:
 	var _pato = cena_pato.instantiate()
+	print(nome)
 	_pato.name = nome
 	_pato.pontuacao = str(pontuacao_por_pato)
 	_pato._velocidade = _pato._velocidade * multiplicador_velocidade
@@ -147,6 +146,9 @@ func _on_topo_body_entered(body: Node2D) -> void:
 		patos_fugiu += 1
 		_finaliza_round()
 		body.queue_free()
+		return
+	for p in $Patos.get_children():
+			p._set_pode_fugir()
 
 func _on_lados_body_entered(body: Node2D) -> void:
 	if multiplayer.is_server():

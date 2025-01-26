@@ -33,7 +33,7 @@ func _join_server(ip, porta) -> void:
 	multiplayer.server_disconnected.connect(_desconectou)
 	_peer.create_client(ip, porta)
 	multiplayer.multiplayer_peer = _peer
-	_alvo = false
+	_alvo = true
 	
 func _reset():
 	_multiplayer = false

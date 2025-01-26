@@ -41,6 +41,8 @@ func _process(delta: float) -> void:
 					main._on_alvo_matou_pato.rpc()
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
+	if body.pode_fugir:
+		return
 	pato_na_mira = body
 
 func _on_area_2d_body_exited(body: Node2D) -> void:
