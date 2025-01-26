@@ -8,17 +8,13 @@ func _on_host_pressed() -> void:
 
 func _disable_buttons():
 	$Panel/Host.visible = false
-	$Panel/Entrar.visible = false
+	$Panel/EntrarAlvo.visible = false
+	$Panel/EntrarPato.visible = false
 	
 func _able_buttons():
 	$Panel/Host.visible = true
-	$Panel/Entrar.visible = true
-	
-func _on_entrar_pressed() -> void:
-	$Panel/Iniciar.visible = false
-	GameManager._player_nome = $Panel/LineEditNome.text
-	GameManager._join_server($Panel/LineEditIp.text, $Panel/LineEditPorta.text.to_int())
-	_disable_buttons()
+	$Panel/EntrarAlvo.visible = false
+	$Panel/EntrarPato.visible = false
 	
 func _on_desconectar_pressed() -> void:
 	GameManager._on_desconected()
@@ -39,3 +35,15 @@ func _on_iniciar_pressed() -> void:
 func _start_game() -> void:
 	GameManager._gera_dicionario()
 	get_tree().change_scene_to_file("res://scenes/main/main.tscn")
+
+func _on_entrar_pato_pressed() -> void:
+	$Panel/Iniciar.visible = false
+	GameManager._player_nome = $Panel/LineEditNome.text
+	GameManager._join_server($Panel/LineEditIp.text, $Panel/LineEditPorta.text.to_int(), false)
+	_disable_buttons()
+
+func _on_entrar_alvo_pressed() -> void:
+	$Panel/Iniciar.visible = false
+	GameManager._player_nome = $Panel/LineEditNome.text
+	GameManager._join_server($Panel/LineEditIp.text, $Panel/LineEditPorta.text.to_int(), true)
+	_disable_buttons()

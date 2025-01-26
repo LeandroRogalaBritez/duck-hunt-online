@@ -85,20 +85,28 @@ offset_right = 297.0
 offset_bottom = 72.0
 text = "Host"
 
-[node name="Entrar" type="Button" parent="Panel"]
+[node name="EntrarAlvo" type="Button" parent="Panel"]
 layout_mode = 0
-offset_left = 331.0
-offset_top = 44.0
-offset_right = 388.0
-offset_bottom = 75.0
-text = "Entrar"
+offset_left = 316.0
+offset_top = 40.0
+offset_right = 373.0
+offset_bottom = 71.0
+text = "Entrar Alvo"
+
+[node name="EntrarPato" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 430.0
+offset_top = 40.0
+offset_right = 526.0
+offset_bottom = 71.0
+text = "Entrar Pato"
 
 [node name="Desconectar" type="Button" parent="Panel"]
 layout_mode = 0
-offset_left = 447.0
-offset_top = 42.0
-offset_right = 552.0
-offset_bottom = 73.0
+offset_left = 549.0
+offset_top = 39.0
+offset_right = 654.0
+offset_bottom = 70.0
 text = "Desconectar"
 
 [node name="Fechar" type="Button" parent="Panel"]
@@ -126,7 +134,8 @@ text = "Iniciar
 "
 
 [connection signal="pressed" from="Panel/Host" to="." method="_on_host_pressed"]
-[connection signal="pressed" from="Panel/Entrar" to="." method="_on_entrar_pressed"]
+[connection signal="pressed" from="Panel/EntrarAlvo" to="." method="_on_entrar_alvo_pressed"]
+[connection signal="pressed" from="Panel/EntrarPato" to="." method="_on_entrar_pato_pressed"]
 [connection signal="pressed" from="Panel/Desconectar" to="." method="_on_desconectar_pressed"]
 [connection signal="pressed" from="Panel/Fechar" to="." method="_on_fechar_pressed"]
 [connection signal="pressed" from="Panel/Iniciar" to="." method="_on_iniciar_pressed"]

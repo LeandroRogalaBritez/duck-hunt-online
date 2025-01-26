@@ -7,6 +7,7 @@ var _player_nome
 var _multiplayer = false
 var _alvo = true
 var _players_patos = []
+var quantidade_patos = 0
 
 signal player_desconectou(player_id)
 
@@ -26,14 +27,14 @@ func _create_server(ip, porta) -> void:
 	multiplayer.multiplayer_peer = _peer
 	multiplayer.peer_disconnected.connect(_remove_player)
 	
-func _join_server(ip, porta) -> void:
+func _join_server(ip, porta, _alvo) -> void:
 	_multiplayer = true
+	self._alvo = _alvo
 	_peer = ENetMultiplayerPeer.new()
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
 	multiplayer.server_disconnected.connect(_desconectou)
 	_peer.create_client(ip, porta)
 	multiplayer.multiplayer_peer = _peer
-	_alvo = true
 	
 func _reset():
 	_multiplayer = false
@@ -50,18 +51,39 @@ func _desconectou():
 
 func _remove_player(_id = 1):
 	player_desconectou.emit(_id)
-	_players.remove_at(_players.find(_id))
+	var index_remover = -1
+	for p in _players:
+		index_remover += 1
+		var json = JSON.parse_string(p)
+		if json["id"] == str(_id):
+			break
+	_players.remove_at(index_remover)
 	_update_players_list.rpc(_players)
 	
 func _add_player(_id, nome):
-	_players.append('{"id": "%s", "nome":"%s"}' % [_id, nome])
+	_players.append('{"id": "%s", "nome":"%s", "alvo":"%s"}' % [_id, nome, "true"])
 	_update_players_list.rpc(_players)
 
 @rpc("any_peer")
-func set_player_name(player_name: String):
+func set_player_name(player_name: String, _alvo: bool):
 	if multiplayer.is_server():
-		_players.append('{"id": "%s", "nome":"%s"}' % [multiplayer.get_remote_sender_id(), player_name])
-		_update_players_list.rpc(_players)
+		if !_alvo:
+			if quantidade_patos == 2:
+				_players.append('{"id": "%s", "nome":"%s", "alvo":"%s"}' % [multiplayer.get_remote_sender_id(), player_name, "true"])
+				_muda_para_alvo.rpc_id(multiplayer.get_remote_sender_id())
+				_update_players_list.rpc(_players)
+				return
+			quantidade_patos += 1
+			_players.append('{"id": "%s", "nome":"%s", "alvo":"%s"}' % [multiplayer.get_remote_sender_id(), player_name, "false"])
+			_update_players_list.rpc(_players)
+		else:
+			_players.append('{"id": "%s", "nome":"%s", "alvo":"%s"}' % [multiplayer.get_remote_sender_id(), player_name, "true"])
+			_update_players_list.rpc(_players)
+
+@rpc("any_peer")
+func _muda_para_alvo():
+	OS.alert("Limite de patos atingidos, você foi alterado para um alvo", "Atenção")
+	_alvo = true
 
 @rpc("any_peer", "call_local")
 func _update_players_list(_players_update):
@@ -71,10 +93,15 @@ func _update_players_list(_players_update):
 		player_list.clear()
 		for p in _players:
 			var json = JSON.parse_string(p)
-			player_list.add_item(json["nome"], null, false)
-		
+			player_list.add_item(json["nome"] + " - " + _get_nome_jogavel(json["alvo"]), null, false)
+
+func _get_nome_jogavel(_alvo):
+	if _alvo == "true":
+		return "ALVO"
+	return "PATO"
+
 func _on_connected_to_server():
-	set_player_name.rpc(_player_nome)
+	set_player_name.rpc(_player_nome, _alvo)
 		
 func _on_desconected() -> void:
 	_reset()

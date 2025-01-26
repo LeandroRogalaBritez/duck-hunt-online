@@ -11,7 +11,8 @@ var vivo: bool = true
 var quantidade_bounce_top
 @export var _jogavel: bool
 @onready var auto_bounce = $TentativaDeBounce
-var pode_fugir = false
+@export var pode_fugir = false
+var tempo_time_out_fugir = 7
 
 func _ready() -> void:
 	if multiplayer.is_server():
@@ -21,6 +22,8 @@ func _ready() -> void:
 			audio.play()
 
 	if _jogavel:
+		tempo_time_out_fugir = (_velocidade / 300) * 7
+		$TimerPodeFugir.start(tempo_time_out_fugir)
 		rpc_id(name.to_int(), "_grava_propriedades", _jogavel, pontuacao, position)
 		auto_bounce.stop()
 
@@ -52,15 +55,22 @@ func _seleciona_animacao() -> void:
 		_animacao_sprite.flip_h = false
 		_animacao_sprite.play("cima")
 		return
-		
+
+@rpc("any_peer", "call_local")
 func _set_pode_fugir() -> void:
-	if is_multiplayer_authority():
-		pode_fugir = true
-		_direcao_y = -1 
-		_direcao_x = 0
+	pode_fugir = true
+	_direcao_y = -1 
+	_direcao_x = 0
 
 func _physics_process(delta: float) -> void:
-	if multiplayer.is_server() or (pode_fugir or !_jogavel or (_jogavel and !vivo)):
+	if multiplayer.is_server():
+		var direcao = Vector2(_direcao_x, _direcao_y).normalized()
+		velocity.y = direcao.y * _velocidade
+		velocity.x = direcao.x * _velocidade
+		move_and_slide()
+		return
+		
+	if _jogavel and ((vivo and pode_fugir) or (!vivo)) :
 		var direcao = Vector2(_direcao_x, _direcao_y).normalized()
 		velocity.y = direcao.y * _velocidade
 		velocity.x = direcao.x * _velocidade
@@ -106,3 +116,6 @@ func _bounce_y() -> void:
 func _on_tentativa_de_bounce_timeout() -> void:
 	if randi() % 100 < 30:
 		_bounce()
+
+func _on_timer_pode_fugir_timeout() -> void:
+	_set_pode_fugir.rpc()

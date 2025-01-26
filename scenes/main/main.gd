@@ -35,8 +35,6 @@ var quantidade_bounce_top = 0
 @onready var bounce_down_area = $BounceDown/Down
 var patos_que_tocou = 0
 
-signal teste
-
 @rpc("any_peer", "call_local", "reliable")
 func _avisa_que_e_alvo() -> void:
 	if multiplayer.is_server():
@@ -95,7 +93,6 @@ func _inicia_round() -> void:
 @rpc("any_peer", "call_local")
 func _play_audio_round() -> void:
 	audio_round.play()
-		
 	
 @rpc("any_peer", "call_local")
 func _prepara_inicio_round() -> void:
@@ -145,9 +142,6 @@ func _on_topo_body_entered(body: Node2D) -> void:
 		patos_fugiu += 1
 		_finaliza_round()
 		body.queue_free()
-		return
-	for p in $Patos.get_children():
-			p._set_pode_fugir()
 
 func _on_lados_body_entered(body: Node2D) -> void:
 	if multiplayer.is_server():
@@ -245,7 +239,6 @@ func _on_alvo_matou_pato() -> void:
 	var current_region = pato_hud.region_rect
 	current_region.position.y = 273
 	pato_hud.region_rect = current_region
-
 
 func _on_bounce_top_body_entered(body: Node2D) -> void:
 	if multiplayer.is_server():

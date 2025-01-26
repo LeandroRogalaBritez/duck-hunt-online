@@ -95,6 +95,9 @@ properties/5/replication_mode = 1
 properties/6/path = NodePath(".:_jogavel")
 properties/6/spawn = true
 properties/6/replication_mode = 1
+properties/7/path = NodePath(".:pode_fugir")
+properties/7/spawn = true
+properties/7/replication_mode = 1
 
 [node name="Pato" type="CharacterBody2D"]
 collision_mask = 0
@@ -126,7 +129,11 @@ autostart = true
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_74c4n")
 
+[node name="TimerPodeFugir" type="Timer" parent="."]
+one_shot = true
+
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="timeout" from="TentativaDeBounce" to="." method="_on_tentativa_de_bounce_timeout"]
+[connection signal="timeout" from="TimerPodeFugir" to="." method="_on_timer_pode_fugir_timeout"]
 
 [editable path="Audio"]
