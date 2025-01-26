@@ -55,7 +55,7 @@ func _adiciona_quantidade_tiros(_quantidade_tiros) -> void:
 
 @rpc("any_peer")
 func _remove_quantidade_tiros() -> void:
-	if !GameManager._alvo:
+	if !GameManager.alvo:
 		quantidade_tiros -= 1
 		$HudGame/Tiro/Label.text = str(quantidade_tiros)
 
@@ -65,7 +65,7 @@ func _ready() -> void:
 	var bus_index = AudioServer.get_bus_index("Master")
 	AudioServer.set_bus_volume_db(bus_index, -10000)
 	
-	if GameManager._alvo:
+	if GameManager.alvo:
 		_avisa_que_e_alvo.rpc()
 	else:
 		$HudGame/Tiro/Label.visible = true
@@ -109,7 +109,7 @@ func _play_audio_round() -> void:
 	
 @rpc("any_peer", "call_local")
 func _prepara_inicio_round() -> void:
-	if GameManager._alvo:
+	if GameManager.alvo:
 		alvo.pode_atirar = true
 		alvo.cabou_balas = false
 		for b in balas_no_cartucho.size():
