@@ -2,59 +2,63 @@ extends Node
 
 # Variaveis Publicas
 var peer
-var player_nome
-var players_dicionario: Dictionary = {}
 var alvo = true
 var modo_multiplayer = false
+var players_patos = []
 
 # Variaveis privadas
+var _player_nome
 var _quantidade_patos = 0
 var _mostrar_alerta = true
+var _players_dicionario: Dictionary = {}
 
+# Revisar essa variavel é só utilizar tudo no dicionario
 var _players = []
-var _players_patos = []
 
 # Sinais
 signal player_desconectou(player_id)
 
 func get_nome(_unique_id) -> String:
-	return players_dicionario[_unique_id]
+	return _players_dicionario[_unique_id]
 
 func gera_dicionario() -> void:
 	for p in _players:
 		var _json = JSON.parse_string(p)
-		players_dicionario[_json["id"]] = _json["nome"]
+		_players_dicionario[_json["id"]] = _json["nome"]
 		
-func create_server(_ip, _porta) -> void:
+func create_server(_ip, _porta, _nome) -> void:
 	modo_multiplayer = true
 	peer = ENetMultiplayerPeer.new()
 	peer.set_bind_ip(_ip)
 	peer.create_server(_porta)
 	multiplayer.multiplayer_peer = peer
 	multiplayer.peer_disconnected.connect(remove_player)
+	_players.append('{"id": "%s", "nome":"%s", "alvo":"%s"}' % [str(multiplayer.get_unique_id()), _nome, "true"])
+	_update_players_list.rpc(_players)
 	
-func join_server(_ip, _porta, _alvo) -> void:
+func join_server(_ip, _porta, _alvo, _player_nome) -> void:
 	modo_multiplayer = true
 	self.alvo = _alvo
+	self._player_nome = _player_nome
 	peer = ENetMultiplayerPeer.new()
-	multiplayer.connected_to_server.connect(on_connected_to_server)
-	multiplayer.server_disconnected.connect(desconectou)
+	multiplayer.connected_to_server.connect(_on_connected_to_server)
+	multiplayer.server_disconnected.connect(_on_disconnected_to_server)
 	peer.create_client(_ip, _porta)
 	multiplayer.multiplayer_peer = peer
 	
-func reset():
+func _reset():
 	modo_multiplayer = false
 	peer = null
 	_players = []
-	players_dicionario = {}
-	player_nome = null
-	_players_patos = []
+	_players_dicionario = {}
+	_player_nome = null
+	players_patos = []
 	_mostrar_alerta = true
 	
-func desconectou():
+func _on_disconnected_to_server():
 	if _mostrar_alerta:
 		OS.alert("Perdeu a conexão com servidor", "ALERTA")
-	reset()
+	_reset()
 	get_tree().change_scene_to_file("res://scenes/lobby/lobby.tscn")
 
 func remove_player(_id = 1):
@@ -67,12 +71,8 @@ func remove_player(_id = 1):
 			if json["alvo"] == "false":
 				_quantidade_patos -= 1
 			break
-	_players_patos.remove_at(_players_patos.find(str(_id)))
+	players_patos.remove_at(players_patos.find(str(_id)))
 	_players.remove_at(index_remover)
-	_update_players_list.rpc(_players)
-	
-func add_player(_id, _nome):
-	_players.append('{"id": "%s", "nome":"%s", "alvo":"%s"}' % [_id, _nome, "true"])
 	_update_players_list.rpc(_players)
 
 @rpc("any_peer")
@@ -111,11 +111,11 @@ func _get_nome_jogavel(_alvo):
 		return "ALVO"
 	return "PATO"
 
-func on_connected_to_server():
-	set_player_name.rpc(player_nome, alvo)
+func _on_connected_to_server():
+	set_player_name.rpc(_player_nome, alvo)
 		
 func on_desconected() -> void:
 	if multiplayer.is_server():
-		reset()
+		_reset()
 	_mostrar_alerta = false
 	multiplayer.multiplayer_peer.close()

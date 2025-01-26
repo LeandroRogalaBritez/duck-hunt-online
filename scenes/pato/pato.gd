@@ -44,7 +44,7 @@ func _grava_propriedades(_jogavel, _pontuacao, _position) -> void:
 	self.pontuacao = _pontuacao
 	self.position = _position
 	if _jogavel:
-		$Nome.text = GameManager.player_nome
+		$Nome.text = GameManager.get_nome(str(multiplayer.get_unique_id()))
 		$Nome.visible = true
 	
 func _seleciona_animacao() -> void:

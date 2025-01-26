@@ -1,10 +1,8 @@
 extends Control
 
 func _on_host_pressed() -> void:
-	GameManager.player_nome = $Panel/LineEditNome.text
-	GameManager.create_server($Panel/LineEditIp.text, $Panel/LineEditPorta.text.to_int())
+	GameManager.create_server($Panel/LineEditIp.text, $Panel/LineEditPorta.text.to_int(), $Panel/LineEditNome.text)
 	_disable_buttons()
-	GameManager.add_player(1, $Panel/LineEditNome.text)
 
 func _disable_buttons():
 	$Panel/Host.visible = false
@@ -38,12 +36,10 @@ func _start_game() -> void:
 
 func _on_entrar_pato_pressed() -> void:
 	$Panel/Iniciar.visible = false
-	GameManager.player_nome = $Panel/LineEditNome.text
-	GameManager.join_server($Panel/LineEditIp.text, $Panel/LineEditPorta.text.to_int(), false)
+	GameManager.join_server($Panel/LineEditIp.text, $Panel/LineEditPorta.text.to_int(), false, $Panel/LineEditNome.text)
 	_disable_buttons()
 
 func _on_entrar_alvo_pressed() -> void:
 	$Panel/Iniciar.visible = false
-	GameManager.player_nome = $Panel/LineEditNome.text
-	GameManager.join_server($Panel/LineEditIp.text, $Panel/LineEditPorta.text.to_int(), true)
+	GameManager.join_server($Panel/LineEditIp.text, $Panel/LineEditPorta.text.to_int(), true, $Panel/LineEditNome.text)
 	_disable_buttons()
