@@ -5,6 +5,8 @@ var players: Dictionary = {}
 var _players = []
 var _player_nome
 var _multiplayer = false
+var _alvo = true
+var _players_patos = []
 
 signal player_desconectou(player_id)
 
@@ -31,6 +33,7 @@ func _join_server(ip, porta) -> void:
 	multiplayer.server_disconnected.connect(_desconectou)
 	_peer.create_client(ip, porta)
 	multiplayer.multiplayer_peer = _peer
+	_alvo = false
 	
 func _reset():
 	_multiplayer = false
@@ -38,6 +41,7 @@ func _reset():
 	_players = []
 	players = {}
 	_player_nome = null
+	_players_patos = []
 	
 func _desconectou():
 	_reset()

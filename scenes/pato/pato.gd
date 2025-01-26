@@ -9,14 +9,40 @@ var vivo: bool = true
 @onready var label = $Label
 @export var pontuacao = "0" 
 var quantidade_bounce_top
+@export var _jogavel: bool
+@onready var auto_bounce = $TentativaDeBounce
 
 func _ready() -> void:
 	if multiplayer.is_server():
-		_mover_direcao_aleatoria_x()
-		_seleciona_animacao()
-	audio.play()
+		if !_jogavel:
+			_mover_direcao_aleatoria_x()
+			_seleciona_animacao()
+			audio.play()
+
+	if _jogavel:
+		rpc_id(name.to_int(), "_grava_propriedades", _jogavel, pontuacao, position)
+		auto_bounce.stop()
+
+@rpc("any_peer", "call_local")
+func _grava_autoridade() -> void:
+	set_multiplayer_authority(name.to_int())
+
+@rpc("any_peer", "call_local", "unreliable")
+func _grava_propriedades(_jogavel, _pontuacao, _position) -> void:
+	_grava_autoridade.rpc()
+	self._jogavel = _jogavel
+	self.pontuacao = _pontuacao
+	self.position = _position
 	
 func _seleciona_animacao() -> void:
+	if _jogavel:
+		var _horizontal_input: float = Input.get_axis("ui_left", "ui_right")
+		if _horizontal_input == -1:
+			_animacao_sprite.flip_h = true
+		if _horizontal_input == +1:
+			_animacao_sprite.flip_h = false
+		_animacao_sprite.play("cima")
+		
 	if _direcao_x < 0:
 		_animacao_sprite.flip_h = true
 		_animacao_sprite.play("cima")
@@ -27,12 +53,20 @@ func _seleciona_animacao() -> void:
 		return
 
 func _physics_process(delta: float) -> void:
-	if multiplayer.is_server():
+	if multiplayer.is_server() and (!_jogavel or _jogavel and !vivo):
 		var direcao = Vector2(_direcao_x, _direcao_y).normalized()
 		velocity.y = direcao.y * _velocidade
 		velocity.x = direcao.x * _velocidade
-	
 		move_and_slide()
+		
+	if _jogavel and vivo and is_multiplayer_authority():
+		var direcao = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+		velocity = direcao * _velocidade
+		move_and_slide()
+		position.x = clamp(position.x, 45, 720)
+		position.y = clamp(position.y, 55, 490)
+		_seleciona_animacao()
+		
 
 func _mover_direcao_aleatoria_x() -> void:
 	_direcao_x = [-5, 5].pick_random()

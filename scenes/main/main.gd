@@ -38,20 +38,28 @@ var patos_que_tocou = 0
 signal teste
 
 @rpc("any_peer", "call_local", "reliable")
-func _create_alvos() -> void:
+func _avisa_que_e_alvo() -> void:
 	if multiplayer.is_server():
 		var _alvo = preload("res://scenes/alvo/alvo.tscn").instantiate()
 		_alvo.name = str(multiplayer.get_remote_sender_id())
 		_alvo.z_index = 999
 		$Alvos.call_deferred("add_child", _alvo)
 
+@rpc("any_peer", "call_local", "reliable")
+func _avisa_que_e_pato() -> void:
+	if multiplayer.is_server():
+		GameManager._players_patos.append(str(multiplayer.get_remote_sender_id()))
+
 func _ready() -> void:
 	if multiplayer.is_server():
 		GameManager.player_desconectou.connect(_on_player_desconectou)
-	#var bus_index = AudioServer.get_bus_index("Master")
-	#AudioServer.set_bus_volume_db(bus_index, -10000)
+	var bus_index = AudioServer.get_bus_index("Master")
+	AudioServer.set_bus_volume_db(bus_index, -10000)
 	
-	_create_alvos.rpc()
+	if GameManager._alvo:
+		_avisa_que_e_alvo.rpc()
+	else:
+		_avisa_que_e_pato.rpc()
 	
 	cao.cachorro_pulou.connect(_inicia_round)
 	
@@ -91,21 +99,22 @@ func _play_audio_round() -> void:
 	
 @rpc("any_peer", "call_local")
 func _prepara_inicio_round() -> void:
-	alvo.pode_atirar = true
-	alvo.cabou_balas = false
-	for b in balas_no_cartucho.size():
-		var bala = balas_no_cartucho[b]
-		if is_instance_valid(bala):
-			bala.queue_free()
-			
-	balas_no_cartucho.clear()
+	if GameManager._alvo:
+		alvo.pode_atirar = true
+		alvo.cabou_balas = false
+		for b in balas_no_cartucho.size():
+			var bala = balas_no_cartucho[b]
+			if is_instance_valid(bala):
+				bala.queue_free()
+				
+		balas_no_cartucho.clear()
 
-	for b in balas_maxima:
-		var baladuplicada = bala.duplicate()
-		baladuplicada.position = baladuplicada.position + Vector2(21 * b, 0)
-		baladuplicada.visible = true
-		balas_no_cartucho.append(baladuplicada)
-		$HudGame/Tiro.add_child(baladuplicada)
+		for b in balas_maxima:
+			var baladuplicada = bala.duplicate()
+			baladuplicada.position = baladuplicada.position + Vector2(21 * b, 0)
+			baladuplicada.visible = true
+			balas_no_cartucho.append(baladuplicada)
+			$HudGame/Tiro.add_child(baladuplicada)
 
 func _process(delta: float) -> void:
 	pass
@@ -113,15 +122,25 @@ func _process(delta: float) -> void:
 func gera_patos(_quantidade: float) -> void:
 	patos_gerados = _quantidade
 	var spaws = [spaw_pato, spaw_pato2, spaw_pato3]
+	
+	if !GameManager._players_patos.is_empty():
+		for p in GameManager._players_patos:
+			_gera_pato(p, spaws, true)
+			_quantidade -= 1
+	
 	for numero in _quantidade:
-		var _pato = cena_pato.instantiate()
-		_pato.name = "Pato_#d" % numero
-		_pato.pontuacao = str(pontuacao_por_pato)
-		_pato._velocidade = _pato._velocidade * multiplicador_velocidade
-		var spaw = spaws.pick_random()
-		_pato.position = spaw.position
-		spaws.erase(spaw)
-		$Patos.call_deferred("add_child", _pato)
+		_gera_pato("Pato_#d" % numero, spaws, false)
+		
+func _gera_pato(nome, spaws, jogavel) -> void:
+	var _pato = cena_pato.instantiate()
+	_pato.name = nome
+	_pato.pontuacao = str(pontuacao_por_pato)
+	_pato._velocidade = _pato._velocidade * multiplicador_velocidade
+	var spaw = spaws.pick_random()
+	_pato.position = spaw.position
+	_pato._jogavel = jogavel
+	spaws.erase(spaw)
+	$Patos.call_deferred("add_child", _pato)
 		
 func _on_topo_body_entered(body: Node2D) -> void:
 	if multiplayer.is_server():

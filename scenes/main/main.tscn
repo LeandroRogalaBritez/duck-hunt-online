@@ -152,13 +152,13 @@ text = "000000000"
 [node name="Alvos" type="Node2D" parent="."]
 
 [node name="SpawPato" type="Marker2D" parent="."]
-position = Vector2(384, 483)
+position = Vector2(384, 485)
 
 [node name="SpawPato2" type="Marker2D" parent="."]
 position = Vector2(106, 485)
 
 [node name="SpawPato3" type="Marker2D" parent="."]
-position = Vector2(649, 490)
+position = Vector2(649, 485)
 
 [node name="Cenario" type="Node2D" parent="."]
 
