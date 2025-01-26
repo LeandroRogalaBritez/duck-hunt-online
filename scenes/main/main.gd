@@ -255,6 +255,10 @@ func _on_bounce_down_body_entered(body: Node2D) -> void:
 		body._bounce_y()
 
 func _on_player_desconectou(player_id) -> void:
+	for p in $Patos.get_children():
+		if p.name == str(player_id):
+			p._perdeu_conexao_jogavel.rpc()
+			return
 	for a in $Alvos.get_children():
 		if a.name == str(player_id):
 			a.queue_free()

@@ -62,6 +62,7 @@ func _remove_player(_id = 1):
 			if json["alvo"] == "false":
 				quantidade_patos -= 1
 			break
+	_players_patos.remove_at(_players_patos.find(str(_id)))
 	_players.remove_at(index_remover)
 	_update_players_list.rpc(_players)
 	

@@ -26,6 +26,14 @@ func _ready() -> void:
 		auto_bounce.stop()
 
 @rpc("any_peer", "call_local")
+func _perdeu_conexao_jogavel() -> void:
+	set_multiplayer_authority(1)
+	_jogavel = false
+	_mover_direcao_aleatoria_x()
+	_seleciona_animacao()
+	$Nome.visible = false
+
+@rpc("any_peer", "call_local")
 func _grava_autoridade() -> void:
 	set_multiplayer_authority(name.to_int())
 
