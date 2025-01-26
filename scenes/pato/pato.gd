@@ -15,7 +15,6 @@ var quantidade_bounce_top
 
 func _ready() -> void:
 	$TimerPodeFugir.start()
-	
 	if multiplayer.is_server():
 		if !_jogavel:
 			_mover_direcao_aleatoria_x()
@@ -36,6 +35,9 @@ func _grava_propriedades(_jogavel, _pontuacao, _position) -> void:
 	self._jogavel = _jogavel
 	self.pontuacao = _pontuacao
 	self.position = _position
+	if _jogavel:
+		$Nome.text = GameManager._player_nome
+		$Nome.visible = true
 	
 func _seleciona_animacao() -> void:
 	if _jogavel:
@@ -62,27 +64,28 @@ func _set_pode_fugir() -> void:
 	_direcao_x = 0
 
 func _physics_process(delta: float) -> void:
-	if multiplayer.is_server():
+	if multiplayer.is_server() and !_jogavel:
 		var direcao = Vector2(_direcao_x, _direcao_y).normalized()
 		velocity.y = direcao.y * _velocidade
 		velocity.x = direcao.x * _velocidade
 		move_and_slide()
 		return
-		
-	if _jogavel and ((vivo and pode_fugir) or (!vivo)) :
-		var direcao = Vector2(_direcao_x, _direcao_y).normalized()
-		velocity.y = direcao.y * _velocidade
-		velocity.x = direcao.x * _velocidade
-		move_and_slide()
-		return
-		
-	if _jogavel and vivo and is_multiplayer_authority() and !pode_fugir:
-		var direcao = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-		velocity = direcao * _velocidade
-		move_and_slide()
-		position.x = clamp(position.x, 45, 720)
-		position.y = clamp(position.y, 55, 490)
-		_seleciona_animacao()
+	
+	if is_multiplayer_authority():
+		if _jogavel and ((vivo and pode_fugir) or (!vivo)) :
+			var direcao = Vector2(_direcao_x, _direcao_y).normalized()
+			velocity.y = direcao.y * _velocidade
+			velocity.x = direcao.x * _velocidade
+			move_and_slide()
+			return
+			
+		if _jogavel and vivo and !pode_fugir:
+			var direcao = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+			velocity = direcao * _velocidade
+			move_and_slide()
+			position.x = clamp(position.x, 45, 720)
+			position.y = clamp(position.y, 55, 490)
+			_seleciona_animacao()
 		return
 
 func _mover_direcao_aleatoria_x() -> void:

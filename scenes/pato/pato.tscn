@@ -98,6 +98,12 @@ properties/6/replication_mode = 1
 properties/7/path = NodePath(".:pode_fugir")
 properties/7/spawn = true
 properties/7/replication_mode = 1
+properties/8/path = NodePath("Nome:text")
+properties/8/spawn = true
+properties/8/replication_mode = 1
+properties/9/path = NodePath("Nome:visible")
+properties/9/spawn = true
+properties/9/replication_mode = 1
 
 [node name="Pato" type="CharacterBody2D"]
 collision_mask = 0
@@ -132,6 +138,13 @@ replication_config = SubResource("SceneReplicationConfig_74c4n")
 [node name="TimerPodeFugir" type="Timer" parent="."]
 wait_time = 15.0
 one_shot = true
+
+[node name="Nome" type="Label" parent="."]
+visible = false
+offset_left = -23.0
+offset_top = -87.0
+offset_right = 17.0
+offset_bottom = -64.0
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="timeout" from="TentativaDeBounce" to="." method="_on_tentativa_de_bounce_timeout"]
