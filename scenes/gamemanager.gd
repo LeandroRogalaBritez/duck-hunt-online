@@ -8,6 +8,7 @@ var _multiplayer = false
 var _alvo = true
 var _players_patos = []
 var quantidade_patos = 0
+var mostrar_alerta = true
 
 signal player_desconectou(player_id)
 
@@ -43,10 +44,12 @@ func _reset():
 	players = {}
 	_player_nome = null
 	_players_patos = []
+	mostrar_alerta = true
 	
 func _desconectou():
+	if mostrar_alerta:
+		OS.alert("Perdeu a conexão com servidor", "ALERTA")
 	_reset()
-	OS.alert("Servidor Caiu a conexão", "ALERTA")
 	get_tree().change_scene_to_file("res://scenes/lobby/lobby.tscn")
 
 func _remove_player(_id = 1):
@@ -56,6 +59,8 @@ func _remove_player(_id = 1):
 		index_remover += 1
 		var json = JSON.parse_string(p)
 		if json["id"] == str(_id):
+			if json["alvo"] == "false":
+				quantidade_patos -= 1
 			break
 	_players.remove_at(index_remover)
 	_update_players_list.rpc(_players)
@@ -104,4 +109,7 @@ func _on_connected_to_server():
 	set_player_name.rpc(_player_nome, _alvo)
 		
 func _on_desconected() -> void:
-	_reset()
+	if multiplayer.is_server():
+		_reset()
+	mostrar_alerta = false
+	multiplayer.multiplayer_peer.close()

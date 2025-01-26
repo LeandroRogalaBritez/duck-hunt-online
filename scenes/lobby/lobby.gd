@@ -13,8 +13,8 @@ func _disable_buttons():
 	
 func _able_buttons():
 	$Panel/Host.visible = true
-	$Panel/EntrarAlvo.visible = false
-	$Panel/EntrarPato.visible = false
+	$Panel/EntrarAlvo.visible = true
+	$Panel/EntrarPato.visible = true
 	
 func _on_desconectar_pressed() -> void:
 	GameManager._on_desconected()

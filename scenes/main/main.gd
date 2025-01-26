@@ -70,12 +70,13 @@ func _ready() -> void:
 func _inicia_round() -> void:
 	if !audio_atmosfera.playing:
 		audio_atmosfera.play()
+		
+	bounce_down_area.disabled = true
+	bounce_down_area.call_deferred("set_disabled", true)
 	
 	if multiplicador_velocidade >= 2:
 		bounce_top_area.disabled = false
 		bounce_top_area.call_deferred("set_disabled", false)
-		bounce_down_area.disabled = true
-		bounce_down_area.call_deferred("set_disabled", true)
 	
 	_prepara_inicio_round.rpc()
 	
@@ -251,11 +252,6 @@ func _on_bounce_top_body_entered(body: Node2D) -> void:
 
 func _on_bounce_down_body_entered(body: Node2D) -> void:
 	if multiplayer.is_server():
-		if quantidade_bounce_top >= multiplicador_velocidade - 1:
-			patos_que_tocou += 1
-			if patos_que_tocou >= patos_gerados:
-				bounce_down_area.disabled = true
-				bounce_down_area.call_deferred("set_disabled", true)
 		body._bounce_y()
 
 func _on_player_desconectou(player_id) -> void:
