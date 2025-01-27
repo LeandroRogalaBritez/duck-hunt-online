@@ -47,7 +47,7 @@ func _avisa_que_e_alvo() -> void:
 @rpc("any_peer", "call_local", "reliable")
 func _avisa_que_e_pato() -> void:
 	if multiplayer.is_server():
-		GameManager._players_patos.append(str(multiplayer.get_remote_sender_id()))
+		GameManager.players_patos.append(str(multiplayer.get_remote_sender_id()))
 
 func _adiciona_quantidade_tiros(_quantidade_tiros) -> void:
 	quantidade_tiros = _quantidade_tiros
@@ -132,8 +132,8 @@ func gera_patos(_quantidade: float) -> void:
 	patos_gerados = _quantidade
 	var spaws = [spaw_pato, spaw_pato2, spaw_pato3]
 	
-	if !GameManager._players_patos.is_empty():
-		for p in GameManager._players_patos:
+	if !GameManager.players_patos.is_empty():
+		for p in GameManager.players_patos:
 			_gera_pato(p, spaws, true)
 			_quantidade -= 1
 	
@@ -169,7 +169,7 @@ func _finaliza_round() -> void:
 	if patos_matou + patos_fugiu == patos_gerados:
 		var ganhou = patos_matou == patos_gerados
 		cao.visible = true
-		cao.anima(ganhou)
+		cao.anima_fim_round(ganhou)
 		if ganhou:
 			round += 1
 			if round > 2:

@@ -6,7 +6,7 @@ var alvo = true
 var modo_multiplayer = false
 var players_patos = []
 
-# Variaveis privadas
+# Variaveis Privadas
 var _player_nome
 var _quantidade_patos = 0
 var _mostrar_alerta = true
