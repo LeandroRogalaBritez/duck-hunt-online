@@ -1,58 +1,61 @@
 extends Node2D
 
-var pato_na_mira
-@onready var audio = $Audio/Tiro
-@onready var audio_recarga = $"Audio/TiroRecarregar"
-@onready var timer_recarga = $TimerRecarga
+# Variaveis de cena
+@onready var _audio_tiro = $Audio/Tiro
+@onready var _audio_recarga = $"Audio/TiroRecarregar"
+@onready var _timer_recarga = $TimerRecarga
+@onready var _nome_player = $Label
+
+# Variaveis privadas
+var _pato_na_mira
+var _main
+
+# Variaveis publicas
 var pode_atirar = false
 var cabou_balas = false
-@onready var label = $Label
-var main
 
 func _enter_tree() -> void:
 	if multiplayer.get_unique_id() == name.to_int():
-		main = get_tree().root.get_node("Main")
 		self.z_index = 999
-		main.alvo = self
+		_main = get_tree().root.get_node("Main")
+		_main.alvo = self
 
 func _ready() -> void:
 	set_multiplayer_authority(name.to_int())
 	if GameManager.modo_multiplayer:
-		label.text = GameManager.get_nome(name)
-		label.visible = true
-		return
+		_nome_player.text = GameManager.get_nome(name)
+		_nome_player.visible = true
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if is_multiplayer_authority():
-		var _posicao_mouse = get_viewport().get_mouse_position()
-		position = _posicao_mouse
+		position = get_viewport().get_mouse_position()
 		
 		if Input.is_action_pressed("atirar"):
 			if cabou_balas:
-				audio_recarga.play()
+				_audio_recarga.play()
 				return
 			if pode_atirar:
-				main._on_alvo_atirou()
+				_main.on_alvo_atirou()
 				pode_atirar = false
 				_on_alvo_atirou.rpc()
-				timer_recarga.start()
-				if pato_na_mira != null and pato_na_mira.vivo:
-					pato_na_mira.morreu.rpc()
-					main._on_alvo_matou_pato.rpc()
+				_timer_recarga.start()
+				if _pato_na_mira != null and _pato_na_mira.vivo:
+					_pato_na_mira.morreu.rpc()
+					_main.on_alvo_matou_pato.rpc()
 
-func _on_area_2d_body_entered(body: Node2D) -> void:
-	if body.pode_fugir:
+func _on_area_2d_body_entered(_body: Node2D) -> void:
+	if _body.pode_fugir:
 		return
-	pato_na_mira = body
+	_pato_na_mira = _body
 
-func _on_area_2d_body_exited(body: Node2D) -> void:
-	pato_na_mira = null
+func _on_area_2d_body_exited(_body: Node2D) -> void:
+	_pato_na_mira = null
 	
 @rpc("any_peer", "call_local")
 func _on_alvo_atirou() -> void:
-	audio.play()
+	_audio_tiro.play()
 
 func _on_timer_recarga_timeout() -> void:
-	audio_recarga.play()
-	await audio_recarga.finished
-	main._on_alvo_verifica_balas()
+	_audio_recarga.play()
+	await _audio_recarga.finished
+	_main.on_alvo_verifica_balas()

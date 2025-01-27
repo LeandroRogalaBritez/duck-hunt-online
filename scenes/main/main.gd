@@ -233,19 +233,19 @@ func _start_game() -> void:
 func _on_iniciar_pressed() -> void:
 	_start_game.rpc()
 
-func _on_alvo_atirou() -> void:
+func on_alvo_atirou() -> void:
 	_remove_quantidade_tiros.rpc()
 	var bala = balas_no_cartucho.pop_back()
 	bala.queue_free()
 
-func _on_alvo_verifica_balas() -> void:
+func on_alvo_verifica_balas() -> void:
 	if balas_no_cartucho.size() > 0:
 		alvo.pode_atirar = true
 	else:
 		alvo.cabou_balas = true
 
 @rpc("any_peer", "call_local")
-func _on_alvo_matou_pato() -> void:
+func on_alvo_matou_pato() -> void:
 	var score_novo = int(score.text) + pontuacao_por_pato
 	var scoreStr = "%09d" % score_novo
 	score.text = scoreStr
