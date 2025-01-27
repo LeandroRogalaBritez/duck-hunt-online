@@ -2,21 +2,16 @@ extends Control
 
 func _on_host_pressed() -> void:
 	GameManager.create_server($Panel/LineEditIp.text, $Panel/LineEditPorta.text.to_int(), $Panel/LineEditNome.text)
-	_disable_buttons()
+	_set_visible_buttons(false)
 
-func _disable_buttons():
-	$Panel/Host.visible = false
-	$Panel/EntrarAlvo.visible = false
-	$Panel/EntrarPato.visible = false
-	
-func _able_buttons():
-	$Panel/Host.visible = true
-	$Panel/EntrarAlvo.visible = true
-	$Panel/EntrarPato.visible = true
+func _set_visible_buttons(value: bool):
+	$Panel/Host.visible = value
+	$Panel/EntrarAlvo.visible = value
+	$Panel/EntrarPato.visible = value
 	
 func _on_desconectar_pressed() -> void:
 	GameManager.on_desconected()
-	_able_buttons()
+	_set_visible_buttons(true)
 	$Panel/PlayerList.clear()
 	$Panel/Iniciar.visible = true
 
@@ -31,15 +26,14 @@ func _on_iniciar_pressed() -> void:
 		
 @rpc("any_peer", "call_local")
 func _start_game() -> void:
-	GameManager.gera_dicionario()
 	get_tree().change_scene_to_file("res://scenes/main/main.tscn")
 
 func _on_entrar_pato_pressed() -> void:
 	$Panel/Iniciar.visible = false
 	GameManager.join_server($Panel/LineEditIp.text, $Panel/LineEditPorta.text.to_int(), false, $Panel/LineEditNome.text)
-	_disable_buttons()
+	_set_visible_buttons(false)
 
 func _on_entrar_alvo_pressed() -> void:
 	$Panel/Iniciar.visible = false
 	GameManager.join_server($Panel/LineEditIp.text, $Panel/LineEditPorta.text.to_int(), true, $Panel/LineEditNome.text)
-	_disable_buttons()
+	_set_visible_buttons(false)
