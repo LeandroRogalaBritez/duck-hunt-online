@@ -145,10 +145,10 @@ func _gera_pato(nome, spaws, jogavel) -> void:
 	var _pato = cena_pato.instantiate()
 	_pato.name = nome
 	_pato.pontuacao = str(pontuacao_por_pato)
-	_pato._velocidade = _pato._velocidade * multiplicador_velocidade
+	_pato.velocidade = _pato.velocidade * multiplicador_velocidade
 	var spaw = spaws.pick_random()
 	_pato.position = spaw.position
-	_pato._jogavel = jogavel
+	_pato.jogavel = jogavel
 	spaws.erase(spaw)
 	$Patos.call_deferred("add_child", _pato)
 		
@@ -160,7 +160,7 @@ func _on_topo_body_entered(body: Node2D) -> void:
 
 func _on_lados_body_entered(body: Node2D) -> void:
 	if multiplayer.is_server():
-		body._bounce()
+		body.bounce_x()
 		
 func _log(str) -> void:
 	print("Quem ta executando: ", multiplayer.get_unique_id(), " - ", str)
@@ -263,11 +263,11 @@ func _on_bounce_top_body_entered(body: Node2D) -> void:
 		bounce_down_area.disabled = false
 		bounce_down_area.call_deferred("set_disabled", false)
 		quantidade_bounce_top += 1
-		body._bounce_y()
+		body.bounce_y()
 
 func _on_bounce_down_body_entered(body: Node2D) -> void:
 	if multiplayer.is_server():
-		body._bounce_y()
+		body.bounce_y()
 
 func _on_player_desconectou(player_id) -> void:
 	for p in $Patos.get_children():

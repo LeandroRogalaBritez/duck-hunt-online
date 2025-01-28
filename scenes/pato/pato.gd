@@ -1,34 +1,38 @@
 extends CharacterBody2D
 
-var _velocidade: float = 300.0
+# Variaveis da cena
+@onready var _animacao_sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var _audio = $Audio/Pato
+@onready var _label = $Label
+@onready var _auto_bounce = $TentativaDeBounce
+
+# Variaveis Privadas
 var _direcao_x: int
 var _direcao_y: int = -1
-@onready var _animacao_sprite: AnimatedSprite2D = $AnimatedSprite2D
+
+# Variaveis Publicas
+@export var pode_fugir = false 
+@export var jogavel: bool
+@export var pontuacao = "0"
 var vivo: bool = true
-@onready var audio = $Audio/Pato
-@onready var label = $Label
-@export var pontuacao = "0" 
-var quantidade_bounce_top
-@export var _jogavel: bool
-@onready var auto_bounce = $TentativaDeBounce
-@export var pode_fugir = false
+var velocidade: float = 300.0
 
 func _ready() -> void:
 	$TimerPodeFugir.start()
 	if multiplayer.is_server():
-		if !_jogavel:
+		if !jogavel:
 			_mover_direcao_aleatoria_x()
 			_seleciona_animacao()
-			audio.play()
+			_audio.play()
 
-	if _jogavel:
-		rpc_id(name.to_int(), "_grava_propriedades", _jogavel, pontuacao, position)
-		auto_bounce.stop()
+	if jogavel:
+		rpc_id(name.to_int(), "_grava_propriedades", jogavel, pontuacao, position)
+		_auto_bounce.stop()
 
 @rpc("any_peer", "call_local")
 func _perdeu_conexao_jogavel() -> void:
 	set_multiplayer_authority(1)
-	_jogavel = false
+	jogavel = false
 	_mover_direcao_aleatoria_x()
 	_seleciona_animacao()
 	$Nome.visible = false
@@ -40,15 +44,15 @@ func _grava_autoridade() -> void:
 @rpc("any_peer", "call_local", "unreliable")
 func _grava_propriedades(_jogavel, _pontuacao, _position) -> void:
 	_grava_autoridade.rpc()
-	self._jogavel = _jogavel
+	self.jogavel = _jogavel
 	self.pontuacao = _pontuacao
 	self.position = _position
-	if _jogavel:
+	if jogavel:
 		$Nome.text = GameManager.get_nome(str(multiplayer.get_unique_id()))
 		$Nome.visible = true
 	
 func _seleciona_animacao() -> void:
-	if _jogavel:
+	if jogavel:
 		var _horizontal_input: float = Input.get_axis("ui_left", "ui_right")
 		if _horizontal_input == -1:
 			_animacao_sprite.flip_h = true
@@ -63,7 +67,6 @@ func _seleciona_animacao() -> void:
 	elif _direcao_x > 0:
 		_animacao_sprite.flip_h = false
 		_animacao_sprite.play("cima")
-		return
 
 @rpc("any_peer", "call_local")
 func _set_pode_fugir() -> void:
@@ -71,38 +74,37 @@ func _set_pode_fugir() -> void:
 	_direcao_y = -1 
 	_direcao_x = 0
 
-func _physics_process(delta: float) -> void:
-	if multiplayer.is_server() and !_jogavel:
-		var direcao = Vector2(_direcao_x, _direcao_y).normalized()
-		velocity.y = direcao.y * _velocidade
-		velocity.x = direcao.x * _velocidade
+func _physics_process(_delta: float) -> void:
+	if multiplayer.is_server() and !jogavel:
+		var _direcao = Vector2(_direcao_x, _direcao_y).normalized()
+		velocity.y = _direcao.y * velocidade
+		velocity.x = _direcao.x * velocidade
 		move_and_slide()
 		return
 	
 	if is_multiplayer_authority():
-		if _jogavel and ((vivo and pode_fugir) or (!vivo)) :
-			var direcao = Vector2(_direcao_x, _direcao_y).normalized()
-			velocity.y = direcao.y * _velocidade
-			velocity.x = direcao.x * _velocidade
+		if jogavel and ((vivo and pode_fugir) or (!vivo)) :
+			var _direcao = Vector2(_direcao_x, _direcao_y).normalized()
+			velocity.y = _direcao.y * velocidade
+			velocity.x = _direcao.x * velocidade
 			move_and_slide()
 			return
 			
-		if _jogavel and vivo and !pode_fugir:
-			var direcao = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-			velocity = direcao * _velocidade
+		if jogavel and vivo and !pode_fugir:
+			var _direcao = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+			velocity = _direcao * velocidade
 			move_and_slide()
 			position.x = clamp(position.x, 45, 720)
 			position.y = clamp(position.y, 55, 490)
 			_seleciona_animacao()
-		return
 
 func _mover_direcao_aleatoria_x() -> void:
 	_direcao_x = [-5, 5].pick_random()
 
 @rpc("any_peer", "call_local")
 func morreu() -> void:
-	label.text = pontuacao
-	label.visible = true
+	_label.text = pontuacao
+	_label.visible = true
 	vivo = false
 	_animacao_sprite.play("susto")
 	_direcao_x = 0
@@ -110,22 +112,22 @@ func morreu() -> void:
 
 func _on_animated_sprite_2d_animation_finished() -> void:
 	if _animacao_sprite.get_animation() == "susto":
-		label.visible = false
+		_label.visible = false
 		_animacao_sprite.play("morte")
 		_direcao_y = 1
 
-func _bounce() -> void:
+func bounce_x() -> void:
 	_direcao_x = _direcao_x * -1
 	_seleciona_animacao()
 	
-func _bounce_y() -> void:
+func bounce_y() -> void:
 	if !vivo:
 		return
 	_direcao_y = _direcao_y * -1
 	
 func _on_tentativa_de_bounce_timeout() -> void:
 	if randi() % 100 < 30:
-		_bounce()
+		bounce_x()
 
 func _on_timer_pode_fugir_timeout() -> void:
 	_set_pode_fugir.rpc()

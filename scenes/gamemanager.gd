@@ -57,7 +57,6 @@ func _on_disconnected_to_server():
 
 func remove_player(_id = 1):
 	player_desconectou.emit(_id)
-	var index_remover = -1
 	
 	if _players_dicionario[str(_id)]["alvo"]:
 		_quantidade_patos -= 1

@@ -33,7 +33,7 @@ func anima_fim_round(_ganhou: bool) -> void:
 
 @rpc("any_peer", "call_local")
 func _play_audio_ganhou() -> void:
-	_audio_perdeu.play()
+	_audio_ganhou.play()
 
 @rpc("any_peer", "call_local")
 func _play_audio_perdeu() -> void:
