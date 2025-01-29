@@ -146,8 +146,17 @@ offset_top = -87.0
 offset_right = 17.0
 offset_bottom = -64.0
 
+[node name="TimerDashResfriamento" type="Timer" parent="."]
+one_shot = true
+
+[node name="TimerTempoDash" type="Timer" parent="."]
+wait_time = 0.2
+one_shot = true
+
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="timeout" from="TentativaDeBounce" to="." method="_on_tentativa_de_bounce_timeout"]
 [connection signal="timeout" from="TimerPodeFugir" to="." method="_on_timer_pode_fugir_timeout"]
+[connection signal="timeout" from="TimerDashResfriamento" to="." method="_on_timer_dash_resfriamento_timeout"]
+[connection signal="timeout" from="TimerTempoDash" to="." method="_on_timer_tempo_dash_timeout"]
 
 [editable path="Audio"]

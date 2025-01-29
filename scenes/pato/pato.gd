@@ -9,6 +9,9 @@ extends CharacterBody2D
 # Variaveis Privadas
 var _direcao_x: int
 var _direcao_y: int = -1
+var _dash_velocidade
+var _is_dashing = false
+var _pode_executar_dash = true
 
 # Variaveis Publicas
 @export var pode_fugir = false 
@@ -18,6 +21,7 @@ var vivo: bool = true
 var velocidade: float = 300.0
 
 func _ready() -> void:
+	_dash_velocidade = velocidade * 2
 	$TimerPodeFugir.start()
 	if multiplayer.is_server():
 		if !jogavel:
@@ -92,12 +96,24 @@ func _physics_process(_delta: float) -> void:
 			
 		if jogavel and vivo and !pode_fugir:
 			var _direcao = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-			velocity = _direcao * velocidade
+			
+			if !_is_dashing:
+				velocity = _direcao * velocidade
+			
 			move_and_slide()
 			position.x = clamp(position.x, 45, 720)
 			position.y = clamp(position.y, 55, 490)
 			_seleciona_animacao()
+			
+			if Input.is_action_just_pressed("ui_accept") and _direcao.length() > 0 and not _is_dashing and _pode_executar_dash:
+				_iniciar_dash(_direcao)
 
+func _iniciar_dash(_direcao):
+	_pode_executar_dash = false
+	_is_dashing = true
+	velocity = _direcao * _dash_velocidade
+	$TimerTempoDash.start()
+	
 func _mover_direcao_aleatoria_x() -> void:
 	_direcao_x = [-5, 5].pick_random()
 
@@ -131,3 +147,11 @@ func _on_tentativa_de_bounce_timeout() -> void:
 
 func _on_timer_pode_fugir_timeout() -> void:
 	_set_pode_fugir.rpc()
+
+
+func _on_timer_tempo_dash_timeout() -> void:
+	_is_dashing = false
+	$TimerDashResfriamento.start()
+
+func _on_timer_dash_resfriamento_timeout() -> void:
+	_pode_executar_dash = true
