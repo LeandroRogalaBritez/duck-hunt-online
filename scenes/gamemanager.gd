@@ -31,10 +31,10 @@ func create_server(_ip, _porta, _nome) -> void:
 func _gera_dicionario_player(_id, _nome, _alvo):
 	_players_dicionario[str(_id)] = {"nome":_nome, "alvo":_alvo}
 	
-func join_server(_ip, _porta, _alvo, _player_nome) -> void:
+func join_server(_ip, _porta, _alvo, _player_nome_novo) -> void:
 	modo_multiplayer = true
 	self.alvo = _alvo
-	self._player_nome = _player_nome
+	self._player_nome = _player_nome_novo
 	peer = ENetMultiplayerPeer.new()
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
 	multiplayer.server_disconnected.connect(_on_disconnected_to_server)
@@ -88,13 +88,13 @@ func _muda_para_alvo():
 	alvo = true
 
 @rpc("any_peer", "call_local")
-func _update_players_dicionario(_players_dicionario):
-	self._players_dicionario = _players_dicionario
+func _update_players_dicionario(_players_dicionario_novo):
+	self._players_dicionario = _players_dicionario_novo
 	var _player_list = get_tree().root.get_node("Lobby/Panel/PlayerList")
 	if is_instance_valid(_player_list):
 		_player_list.clear()
-		for _p in _players_dicionario:
-			var _json = _players_dicionario[_p]
+		for _p in _players_dicionario_novo:
+			var _json = _players_dicionario_novo[_p]
 			_player_list.add_item(_json["nome"] + " - " + _get_nome_jogavel(_json["alvo"]), null, false)
 
 func _get_nome_jogavel(_alvo):

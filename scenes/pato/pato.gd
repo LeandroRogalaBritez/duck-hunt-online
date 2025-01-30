@@ -46,13 +46,13 @@ func _grava_autoridade() -> void:
 	set_multiplayer_authority(name.to_int())
 
 @rpc("any_peer", "call_local", "unreliable")
-func _grava_propriedades(_jogavel, _pontuacao, _position, _velocidade, _dash_velocidade) -> void:
+func _grava_propriedades(_jogavel, _pontuacao, _position, _velocidade, _dash_velocidade_nova) -> void:
 	_grava_autoridade.rpc()
 	self.jogavel = _jogavel
 	self.pontuacao = _pontuacao
 	self.position = _position
 	self.velocidade = _velocidade
-	self._dash_velocidade = _dash_velocidade
+	self._dash_velocidade = _dash_velocidade_nova
 	if jogavel:
 		$Nome.text = GameManager.get_nome(str(multiplayer.get_unique_id()))
 		$Nome.visible = true

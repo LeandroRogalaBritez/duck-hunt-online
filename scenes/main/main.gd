@@ -4,7 +4,6 @@ extends Node2D
 @onready var _spaw_pato = $SpawPato
 @onready var _spaw_pato2 = $SpawPato2
 @onready var _spaw_pato3 = $SpawPato3
-@onready var _patos = $Patos
 @onready var _cao = $Cao
 @onready var _timer_inicia_round = $TimerIniciaRound
 @onready var _timer_finaliza_round = $FinalizaRound
@@ -54,9 +53,9 @@ func _avisa_que_e_pato() -> void:
 	if multiplayer.is_server():
 		GameManager.players_patos.append(str(multiplayer.get_remote_sender_id()))
 
-func _adiciona_quantidade_tiros(_quantidade_tiros) -> void:
-	self._quantidade_tiros = _quantidade_tiros
-	$HudGame/Tiro/Label.text = str(_quantidade_tiros)
+func _adiciona_quantidade_tiros(_quantidade_tiros_novo) -> void:
+	self._quantidade_tiros = _quantidade_tiros_novo
+	$HudGame/Tiro/Label.text = str(_quantidade_tiros_novo)
 
 @rpc("any_peer")
 func _remove_quantidade_tiros() -> void:
@@ -116,9 +115,9 @@ func _prepara_inicio_round() -> void:
 		alvo.pode_atirar = true
 		alvo.cabou_balas = false
 		for _b in _balas_no_cartucho.size():
-			var _bala = _balas_no_cartucho[_b]
-			if is_instance_valid(_bala):
-				_bala.queue_free()
+			var _bala_cartucho = _balas_no_cartucho[_b]
+			if is_instance_valid(_bala_cartucho):
+				_bala_cartucho.queue_free()
 				
 		_balas_no_cartucho.clear()
 
@@ -145,15 +144,15 @@ func _gera_patos(_quantidade: float) -> void:
 		_gera_pato(_nome_pato, _spaws, false)
 		
 func _gera_pato(_nome, _spaws, _jogavel) -> void:
-	var _pato = _cena_pato.instantiate()
-	_pato.name = _nome
-	_pato.pontuacao = str(_pontuacao_por_pato)
-	_pato.velocidade = _pato.velocidade * _multiplicador_velocidade
+	var _pato_gerado = _cena_pato.instantiate()
+	_pato_gerado.name = _nome
+	_pato_gerado.pontuacao = str(_pontuacao_por_pato)
+	_pato_gerado.velocidade = _pato_gerado.velocidade * _multiplicador_velocidade
 	var _spaw = _spaws.pick_random()
-	_pato.position = _spaw.position
-	_pato.jogavel = _jogavel
+	_pato_gerado.position = _spaw.position
+	_pato_gerado.jogavel = _jogavel
 	_spaws.erase(_spaw)
-	$Patos.call_deferred("add_child", _pato)
+	$Patos.call_deferred("add_child", _pato_gerado)
 		
 func _on_topo_body_entered(_body: Node2D) -> void:
 	if multiplayer.is_server():
@@ -238,8 +237,7 @@ func _on_iniciar_pressed() -> void:
 
 func on_alvo_atirou() -> void:
 	_remove_quantidade_tiros.rpc()
-	var _bala = _balas_no_cartucho.pop_back()
-	_bala.queue_free()
+	_balas_no_cartucho.pop_back().queue_free()
 
 func on_alvo_verifica_balas() -> void:
 	if _balas_no_cartucho.size() > 0:
