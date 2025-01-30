@@ -104,6 +104,12 @@ properties/8/replication_mode = 1
 properties/9/path = NodePath(".:jogavel")
 properties/9/spawn = true
 properties/9/replication_mode = 1
+properties/10/path = NodePath(".:_dash_velocidade")
+properties/10/spawn = true
+properties/10/replication_mode = 1
+properties/11/path = NodePath(".:velocidade")
+properties/11/spawn = true
+properties/11/replication_mode = 1
 
 [node name="Pato" type="CharacterBody2D"]
 collision_mask = 0

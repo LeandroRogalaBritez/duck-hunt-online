@@ -9,7 +9,7 @@ extends CharacterBody2D
 # Variaveis Privadas
 var _direcao_x: int
 var _direcao_y: int = -1
-var _dash_velocidade
+@export var _dash_velocidade: float = 600
 var _is_dashing = false
 var _pode_executar_dash = true
 
@@ -18,7 +18,7 @@ var _pode_executar_dash = true
 @export var jogavel: bool
 @export var pontuacao = "0"
 var vivo: bool = true
-var velocidade: float = 300.0
+@export var velocidade: float = 300.0
 
 func _ready() -> void:
 	_dash_velocidade = velocidade * 2
@@ -28,9 +28,9 @@ func _ready() -> void:
 			_mover_direcao_aleatoria_x()
 			_seleciona_animacao()
 			_audio.play()
-
+			return
 	if jogavel:
-		rpc_id(name.to_int(), "_grava_propriedades", jogavel, pontuacao, position)
+		rpc_id(name.to_int(), "_grava_propriedades", jogavel, pontuacao, position, velocidade, _dash_velocidade)
 		_auto_bounce.stop()
 
 @rpc("any_peer", "call_local")
@@ -46,11 +46,13 @@ func _grava_autoridade() -> void:
 	set_multiplayer_authority(name.to_int())
 
 @rpc("any_peer", "call_local", "unreliable")
-func _grava_propriedades(_jogavel, _pontuacao, _position) -> void:
+func _grava_propriedades(_jogavel, _pontuacao, _position, _velocidade, _dash_velocidade) -> void:
 	_grava_autoridade.rpc()
 	self.jogavel = _jogavel
 	self.pontuacao = _pontuacao
 	self.position = _position
+	self.velocidade = _velocidade
+	self._dash_velocidade = _dash_velocidade
 	if jogavel:
 		$Nome.text = GameManager.get_nome(str(multiplayer.get_unique_id()))
 		$Nome.visible = true
@@ -96,7 +98,8 @@ func _physics_process(_delta: float) -> void:
 			
 		if jogavel and vivo and !pode_fugir:
 			var _direcao = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-			
+			#print("_DASH ", _dash_velocidade)
+			print("VEL ", velocidade)
 			if !_is_dashing:
 				velocity = _direcao * velocidade
 			
