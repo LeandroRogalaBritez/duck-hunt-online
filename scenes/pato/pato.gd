@@ -45,7 +45,10 @@ func _perdeu_conexao_jogavel() -> void:
 func _grava_autoridade() -> void:
 	set_multiplayer_authority(name.to_int())
 
-@rpc("any_peer", "call_local", "unreliable")
+# "reliable": este RPC roda uma vez só, na inicialização do pato jogável.
+# Como "unreliable" ele podia sumir — em localhost quase nunca sumia, mas em
+# WebRTC (latência maior e mais variável) o pato nasceria sem velocidade nem nome.
+@rpc("any_peer", "call_local", "reliable")
 func _grava_propriedades(_jogavel, _pontuacao, _position, _velocidade, _dash_velocidade_nova) -> void:
 	_grava_autoridade.rpc()
 	self.jogavel = _jogavel
@@ -98,8 +101,6 @@ func _physics_process(_delta: float) -> void:
 			
 		if jogavel and vivo and !pode_fugir:
 			var _direcao = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-			#print("_DASH ", _dash_velocidade)
-			print("VEL ", velocidade)
 			if !_is_dashing:
 				velocity = _direcao * velocidade
 			

@@ -16,6 +16,7 @@ extends Node2D
 @onready var _pato = $HudGame/Patos/Pato
 @onready var _bounce_top_area = $BounceTop/Top
 @onready var _bounce_down_area = $BounceDown/Down
+@onready var _botao_iniciar = $HudInicial/VBoxContainer/Iniciar
 
 # Variaveis Privadas
 @export var _multiplicador_velocidade = 1
@@ -40,18 +41,22 @@ var _quantidade_tiros
 # Variaveis Publicas
 var alvo
 
-@rpc("any_peer", "call_local", "reliable")
-func _avisa_que_e_alvo() -> void:
-	if multiplayer.is_server():
-		var _alvo = preload("res://scenes/alvo/alvo.tscn").instantiate()
-		_alvo.name = str(multiplayer.get_remote_sender_id())
-		_alvo.z_index = 999
-		$Alvos.call_deferred("add_child", _alvo)
+# Chamado no host quando TODO peer já reportou ter carregado esta cena. Só
+# então os alvos são instanciados: antes disso o MultiplayerSpawner de quem
+# ainda está carregando descartaria o spawn, e nada o reenviaria.
+func _on_todos_prontos() -> void:
+	_botao_iniciar.disabled = false
+	if not multiplayer.is_server():
+		return
+	for _id in GameManager.peers_prontos_ids():
+		if GameManager.peer_e_alvo(_id):
+			_cria_alvo(_id)
 
-@rpc("any_peer", "call_local", "reliable")
-func _avisa_que_e_pato() -> void:
-	if multiplayer.is_server():
-		GameManager.players_patos.append(str(multiplayer.get_remote_sender_id()))
+func _cria_alvo(_id: int) -> void:
+	var _alvo = preload("res://scenes/alvo/alvo.tscn").instantiate()
+	_alvo.name = str(_id)
+	_alvo.z_index = 999
+	$Alvos.call_deferred("add_child", _alvo)
 
 func _adiciona_quantidade_tiros(_quantidade_tiros_novo) -> void:
 	self._quantidade_tiros = _quantidade_tiros_novo
@@ -66,12 +71,13 @@ func _remove_quantidade_tiros() -> void:
 func _ready() -> void:
 	if multiplayer.is_server():
 		GameManager.player_desconectou.connect(_on_player_desconectou)
+	GameManager.todos_prontos.connect(_on_todos_prontos)
+	# Só libera quando todo mundo tiver carregado a cena: começar antes disso
+	# deixaria jogadores sem o próprio alvo em tela.
+	_botao_iniciar.disabled = true
 	
-	if GameManager.alvo:
-		_avisa_que_e_alvo.rpc()
-	else:
+	if !GameManager.alvo:
 		$HudGame/Tiro/Label.visible = true
-		_avisa_que_e_pato.rpc()
 	
 	_cao.cachorro_pulou.connect(_inicia_round)
 	
@@ -80,6 +86,10 @@ func _ready() -> void:
 		_patoduplicado.position = _patoduplicado.position + Vector2(27 * _p, 0)
 		_patos_hud_tela.append(_patoduplicado)
 		$HudGame/Patos.add_child(_patoduplicado)
+	
+	# Por último: a cena (e com ela os MultiplayerSpawners) já está montada,
+	# então agora é seguro o host mandar spawn pra este peer.
+	GameManager.notificar_pronto.rpc(multiplayer.get_unique_id(), GameManager.alvo)
 		
 func _inicia_round() -> void:
 	if !_audio_atmosfera.playing:
