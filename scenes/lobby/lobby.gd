@@ -10,12 +10,13 @@ extends Control
 # a conexão com todo mundo — entrar com a malha incompleta daria um jogo em
 # que parte dos jogadores simplesmente não se vê.
 
-const PAPEL_ALVO := 0
-const PAPEL_PATO := 1
+const PAPEL_AGENTE := 0
+const PAPEL_ET := 1
 
 @onready var _nome: LineEdit = $Panel/Margin/Colunas/Esquerda/LineEditNome
 @onready var _papel: OptionButton = $Panel/Margin/Colunas/Esquerda/OptionPapel
 @onready var _sozinho: Button = $Panel/Margin/Colunas/Esquerda/Sozinho
+@onready var _prototipo: Button = $Panel/Margin/Colunas/Esquerda/PrototipoInvasao
 @onready var _hospedar_local: Button = $Panel/Margin/Colunas/Esquerda/HospedarLocal
 @onready var _entrar_local: Button = $Panel/Margin/Colunas/Esquerda/EntrarLocal
 @onready var _ip: LineEdit = $Panel/Margin/Colunas/Esquerda/LineEditIp
@@ -34,9 +35,9 @@ var _acao_online := ""
 
 func _ready() -> void:
 	_papel.clear()
-	_papel.add_item("ALVO", PAPEL_ALVO)
-	_papel.add_item("PATO", PAPEL_PATO)
-	_papel.selected = PAPEL_ALVO
+	_papel.add_item("AGENTE · mire e capture", PAPEL_AGENTE)
+	_papel.add_item("ET · mova e esquive", PAPEL_ET)
+	_papel.selected = PAPEL_AGENTE
 
 	GameManager.roster_atualizado.connect(_on_roster_atualizado)
 	GameManager.conexao_falhou.connect(_on_conexao_falhou)
@@ -54,8 +55,12 @@ func _ready() -> void:
 # ---------- Sozinho ----------
 
 func _on_sozinho_pressed() -> void:
-	GameManager.jogar_sozinho(_nome.text)
+	GameManager.jogar_sozinho(_nome.text, _papel_e_agente())
 	_start_game()
+
+func _on_prototipo_pressed() -> void:
+	GameManager.on_desconected()
+	get_tree().change_scene_to_file("res://scenes/prototype_invasion/invasion_prototype.tscn")
 
 # ---------- Local ----------
 
@@ -77,7 +82,7 @@ func _on_conectar_local_pressed() -> void:
 	if _endereco == "":
 		_status.text = "Digite o IP do host."
 		return
-	GameManager.entrar_local(_endereco, _papel_e_alvo(), _nome.text)
+	GameManager.entrar_local(_endereco, _papel_e_agente(), _nome.text)
 	if GameManager.peer == null:
 		return
 	_status.text = "Conectando em %s:%d..." % [_endereco, GameManager.PORTA_LOCAL]
@@ -107,7 +112,7 @@ func _on_confirmar_online_pressed() -> void:
 		GameManager.hospedar_online(_codigo, _nome.text)
 	else:
 		_status.text = "Entrando na sala '%s'...\n(o servidor pode levar até 1 min pra acordar)" % _codigo
-		GameManager.entrar_online(_codigo, _papel_e_alvo(), _nome.text)
+		GameManager.entrar_online(_codigo, _papel_e_agente(), _nome.text)
 	_modo_lobby(true)
 
 func _on_sala_online_criada(_codigo: String) -> void:
@@ -116,12 +121,12 @@ func _on_sala_online_criada(_codigo: String) -> void:
 
 # ---------- Estado do lobby ----------
 
-func _papel_e_alvo() -> bool:
-	return _papel.selected == PAPEL_ALVO
+func _papel_e_agente() -> bool:
+	return _papel.selected == PAPEL_AGENTE
 
 # Alterna entre "escolhendo o modo" e "dentro de uma sala".
 func _modo_lobby(_na_sala: bool) -> void:
-	for _b in [_sozinho, _hospedar_local, _entrar_local, _hospedar_online, _entrar_online]:
+	for _b in [_sozinho, _prototipo, _hospedar_local, _entrar_local, _hospedar_online, _entrar_online]:
 		_b.visible = not _na_sala
 	if _na_sala:
 		_ip.visible = false
@@ -138,7 +143,7 @@ func _on_roster_atualizado(_dicionario) -> void:
 	for _p in _dicionario:
 		var _json = _dicionario[_p]
 		_player_list.add_item(
-			"%s - %s" % [_json["nome"], GameManager.get_nome_jogavel(_json["alvo"])],
+			"%s - %s" % [_json["nome"], GameManager.get_nome_jogavel(_json["agente"])],
 			null, false
 		)
 	_atualiza_iniciar()
@@ -188,8 +193,10 @@ func _on_iniciar_pressed() -> void:
 		# Ninguém mais entra depois que a partida começou: um peer que
 		# chegasse agora nasceria sem os spawns já feitos.
 		OnlineNetworkManager.trancar_sala()
+	elif GameManager.peer != null:
+		GameManager.peer.refuse_new_connections = true
 	_start_game.rpc()
 
-@rpc("any_peer", "call_local", "reliable")
+@rpc("authority", "call_local", "reliable")
 func _start_game() -> void:
-	get_tree().change_scene_to_file("res://scenes/main/main.tscn")
+	get_tree().change_scene_to_file("res://scenes/invasion/invasion_match.tscn")

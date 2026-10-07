@@ -1,72 +1,66 @@
-# Duck Hunt Online
+# Alerta: Terra
 
-Recriação do clássico **Duck Hunt**, desenvolvida em **Godot Engine 4.7**, com um twist: o modo online é **assimétrico** — um jogador entra na pele do caçador (mira e atira) enquanto outro(s) jogam como os próprios patos, tentando fugir dos tiros.
+Arcade de defesa terrestre em Godot 4.7.2, baseado no protótipo aprovado de invasão alienígena.
 
-## 🎮 Sobre o jogo
+Dois ETs chegam por onda. Agentes usam três pulsos de contenção por jogador; os invasores tentam esquivar e desembarcar na cidade. Quando todos são capturados, dois agentes apresentam um ET como prova da invasão.
 
-Duck Hunt Online reimagina o clássico de NES como uma disputa **jogador contra jogador**, e não apenas jogador contra IA:
+## Jogar
 
-- **Alvo (Hunter)** — o papel clássico: mira com o mouse/toque e atira nos patos antes que fujam. Tem munição limitada por rodada (3 tiros por espingarda, multiplicados pela quantidade de caçadores na sala).
-- **Pato (Duck)** — controla um dos patos em campo, tentando escapar dos tiros dos "Alvos" em vez de ser controlado pela IA do jogo original.
+Abra `build/testes/AlertaTerra.exe` mantendo o PCK e a pasta de bibliotecas ao lado. No projeto Godot, use F5; a entrada é `scenes/lobby/lobby.tscn`.
 
-Cada rodada tem 4 patos no total — os que não forem controlados por jogadores humanos são preenchidos por IA. A cada 2 rodadas vencidas pelos caçadores, a velocidade dos patos aumenta, elevando a dificuldade.
+- **Solo:** selecione Agente ou ET e clique em Jogar Sozinho. As vagas restantes usam IA.
+- **Local:** até quatro jogadores na mesma rede, via ENet. O anfitrião é Agente; até duas pessoas podem ser ETs.
+- **Online:** código de sala via WebRTC e servidor de sinalização. O anfitrião é Agente; a sala é fechada para novas entradas ao começar.
+- **Protótipo:** o lobby também permite abrir a cena original de teste do feeling.
 
-## 🌐 Como funciona o online
+| Papel/ação | Controle |
+| --- | --- |
+| Agente: mirar/disparar | Mouse / clique esquerdo |
+| ET: mover | WASD ou setas |
+| ET: impulso | Espaço; cooldown de 2 s |
+| Reiniciar | R; somente anfitrião no multiplayer |
+| Trocar papel no solo | Tab |
+| Pausa/opções | Esc; no multiplayer a partida continua |
+| Hitboxes de diagnóstico | H |
 
-O multiplayer usa a **API de alto nível de multiplayer do Godot**, com `ENetMultiplayerPeer` como transporte:
+O pulso marca o ponto por 150 ms antes de resolver. Cada clique gasta uma carga; segurar não dispara continuamente. Captura vale 500 pontos e uma onda inteiramente contida acrescenta 250. Se todos os agentes esgotam as cargas, o desembarque é antecipado após resolver o último pulso.
 
-1. **Hospedar partida** — no lobby, um jogador informa IP e porta e cria o servidor (`GameManager.create_server`). Esse jogador vira automaticamente o *host* (autoridade da partida).
-2. **Entrar na partida** — os demais jogadores digitam o IP/porta do host e escolhem entrar como **Alvo** ou **Pato** (`GameManager.join_server`).
-3. **Limite de patos jogáveis** — no máximo **2 jogadores humanos** podem ser patos ao mesmo tempo. Se a sala já estiver cheia de patos, o próximo jogador que tentar entrar como pato é automaticamente realocado para o papel de Alvo (com aviso na tela).
-4. **Sincronização de estado** — a lista de jogadores conectados (nome + papel) é replicada para todos via **RPC** (`@rpc`), atualizando a lista em tempo real no lobby.
-5. **Autoridade do servidor** — toda a lógica de rodada (spawn de patos, contagem de tiros, pontuação, avanço de round, aumento de dificuldade) roda no host e é replicada para os clientes por RPCs (`any_peer`, `call_local`, `reliable`), mantendo a partida sincronizada.
-6. **Desconexão** — se um jogador cai da partida, o servidor detecta o evento (`peer_disconnected`), remove o jogador da lista e notifica os demais clientes.
+Solo tem cinco ondas; multiplayer é melhor de cinco, encerrando quando um time chega a três vitórias. O movimento do ET é validado e simulado pelo host. Clientes enviam ações; captura, cargas e pontuação são decisões do host.
 
-Ou seja, não é matchmaking automático (sem servidor de lobby central) — é **host direto por IP/porta**, no estilo LAN/peer-to-peer clássico de jogos Godot com ENet.
+## Arte e áudio
 
-## 🕹️ Controles
+A pixel art original foi produzida no **PixelLab**, incluindo ET, nave, cidade noturna, agentes, bolha de contenção, ícone e animações de flutuação/apresentação. O áudio inclui **12 SFX e um ambiente de 20 segundos em loop, gerados com ElevenLabs (elevenlabs.io)**.
 
-| Ação | Entrada |
-|---|---|
-| Atirar (papel Alvo) | Clique do mouse / toque na tela |
+**Esta versão usa áudio do plano gratuito do ElevenLabs, autorizado pelo criador apenas para testes. Não publicar comercialmente estes sons. Eles precisam ser gerados novamente durante uma assinatura com licença comercial.** O script de exportação bloqueia o modo comercial enquanto o manifesto marcar sons de desenvolvimento. [Condições de publicação do ElevenLabs](https://help.elevenlabs.io/hc/en-us/articles/13313564601361-Can-I-publish-the-content-I-generate-on-the-platform).
 
-## 🛠️ Tecnologias
+A arte usa os [termos do PixelLab](https://www.pixellab.ai/termsofservice); origem, IDs e datas estão em `assets/alien/art/manifest.json`. Os prompts e a licença de cada áudio estão em `assets/alien/audio/manifest.json`.
 
-- **Engine:** Godot 4.7
-- **Multiplayer:** High-Level Multiplayer API do Godot (`ENetMultiplayerPeer`) + RPCs
-- **Renderer:** GL Compatibility (mobile + desktop)
-- **Resolução base:** 770x720 (stretch mode `canvas_items`)
-- Suporte a **emulação de toque via mouse**, permitindo jogar em dispositivos móveis
+Sprites e sons antigos foram retirados da árvore de assets. Caminhos de cenas anteriores permanecem como compatibilidade, sem imagens anteriores, e são excluídos da build. O histórico Git não foi reescrito. O nome Alerta: Terra segue sendo um nome de trabalho, sujeito a pesquisa de disponibilidade antes do lançamento.
 
-## 📁 Estrutura do projeto
+## Verificação e build
 
-```
-duck-hunt-online/
-├── assets/          # Sprites, sons e demais recursos
-├── scenes/
-│   ├── lobby/        # Cena de lobby (entrada para partidas online)
-│   └── gamemanager.gd # Autoload que gerencia o estado do jogo
-├── build 1.0/        # Build/exportação já gerada
-├── icon.svg
-└── project.godot     # Configuração do projeto Godot
+Executar da pasta do projeto:
+
+```powershell
+& 'E:\Godot\Godot_v4.7.2-stable_win64_console.exe' --headless --path . 'res://tests/test_invasion.tscn'
+& '.\tests\run_network_tests.ps1' -Transport lan -Players 4
+& '.\tools\export_game.ps1'
 ```
 
-O autoload `GameManager` é responsável por gerenciar o estado global da partida, e a cena inicial do jogo é o **lobby** (`scenes/lobby/lobby.tscn`), usado para reunir/organizar jogadores antes das partidas online.
+Os testes de WebRTC podem usar a sinalização pública padrão ou a fixture local `tests/signaling_fixture.cjs`, configurando `ALERTA_TERRA_SIGNALING_URL`. O servidor público pode hibernar e certas redes/NATs podem impedir uma conexão direta; esta versão mantém STUN e não possui serviço TURN próprio.
 
-## 🚀 Como rodar
+Para refazer áudio após ativar um plano adequado, use `tools/generate_invasion_audio.ps1 -Force` com `ELEVENLABS_API_KEY` no ambiente. A chave não é armazenada no projeto. Sem `-Force`, arquivos existentes conservam seu registro de licença original.
 
-1. Instale o [Godot Engine 4.7+](https://godotengine.org/download).
-2. Clone este repositório:
-   ```bash
-   git clone https://github.com/LeandroRogalaBritez/duck-hunt-online.git
-   ```
-3. Abra a pasta do projeto pelo Project Manager do Godot.
-4. Pressione `F5` (ou o botão de Play) para executar — o jogo inicia direto na tela de lobby.
+Os recursos antigos, testes, documentos, fonte antiga e arquivos temporários são excluídos do pacote. A build é inspecionada por `tools/inspect_export.gd`.
 
-## 📌 Status
+## Organização
 
-Projeto com build 1.0 já disponível no repositório; sistema de lobby e mecânica de tiro implementados.
+- `scenes/invasion/`: regras, atores, HUD, mundo e áudio.
+- `scenes/lobby/`: entrada para os modos solo/local/online.
+- `scenes/network/`: WebRTC/sinalização.
+- `scenes/gamemanager.gd`: sessão, roster e transições.
+- `assets/alien/`: arte, animações, áudio e manifestos.
+- `tests/`: verificações de mecânica, áudio e rede.
+- `docs/implementacao_invasao.md`: decisões e evidências desta entrega.
 
-## 📄 Licença
-
-Ainda não definida.
+Godot Engine e addons mantêm suas licenças próprias; notices do addon WebRTC acompanham o pacote. O código do projeto ainda não recebeu uma licença pública de distribuição.
