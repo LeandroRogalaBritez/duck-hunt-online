@@ -16,7 +16,6 @@ const PAPEL_ET := 1
 @onready var _nome: LineEdit = $Panel/Margin/Colunas/Esquerda/LineEditNome
 @onready var _papel: OptionButton = $Panel/Margin/Colunas/Esquerda/OptionPapel
 @onready var _sozinho: Button = $Panel/Margin/Colunas/Esquerda/Sozinho
-@onready var _prototipo: Button = $Panel/Margin/Colunas/Esquerda/PrototipoInvasao
 @onready var _hospedar_local: Button = $Panel/Margin/Colunas/Esquerda/HospedarLocal
 @onready var _entrar_local: Button = $Panel/Margin/Colunas/Esquerda/EntrarLocal
 @onready var _ip: LineEdit = $Panel/Margin/Colunas/Esquerda/LineEditIp
@@ -57,10 +56,6 @@ func _ready() -> void:
 func _on_sozinho_pressed() -> void:
 	GameManager.jogar_sozinho(_nome.text, _papel_e_agente())
 	_start_game()
-
-func _on_prototipo_pressed() -> void:
-	GameManager.on_desconected()
-	get_tree().change_scene_to_file("res://scenes/prototype_invasion/invasion_prototype.tscn")
 
 # ---------- Local ----------
 
@@ -126,7 +121,7 @@ func _papel_e_agente() -> bool:
 
 # Alterna entre "escolhendo o modo" e "dentro de uma sala".
 func _modo_lobby(_na_sala: bool) -> void:
-	for _b in [_sozinho, _prototipo, _hospedar_local, _entrar_local, _hospedar_online, _entrar_online]:
+	for _b in [_sozinho, _hospedar_local, _entrar_local, _hospedar_online, _entrar_online]:
 		_b.visible = not _na_sala
 	if _na_sala:
 		_ip.visible = false

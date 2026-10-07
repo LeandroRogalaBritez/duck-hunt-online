@@ -11,7 +11,6 @@ Abra `build/testes/AlertaTerra.exe` mantendo o PCK e a pasta de bibliotecas ao l
 - **Solo:** selecione Agente ou ET e clique em Jogar Sozinho. As vagas restantes usam IA.
 - **Local:** até quatro jogadores na mesma rede, via ENet. O anfitrião é Agente; até duas pessoas podem ser ETs.
 - **Online:** código de sala via WebRTC e servidor de sinalização. O anfitrião é Agente; a sala é fechada para novas entradas ao começar.
-- **Protótipo:** o lobby também permite abrir a cena original de teste do feeling.
 
 | Papel/ação | Controle |
 | --- | --- |

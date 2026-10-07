@@ -88,10 +88,6 @@ layout_mode = 2
 layout_mode = 2
 text = "Jogar Sozinho"
 
-[node name="PrototipoInvasao" type="Button" parent="Panel/Margin/Colunas/Esquerda"]
-layout_mode = 2
-text = "Abrir protótipo aprovado"
-
 [node name="Sep2" type="HSeparator" parent="Panel/Margin/Colunas/Esquerda"]
 layout_mode = 2
 
@@ -183,7 +179,6 @@ size_flags_horizontal = 3
 text = "Sair"
 
 [connection signal="pressed" from="Panel/Margin/Colunas/Esquerda/Sozinho" to="." method="_on_sozinho_pressed"]
-[connection signal="pressed" from="Panel/Margin/Colunas/Esquerda/PrototipoInvasao" to="." method="_on_prototipo_pressed"]
 [connection signal="pressed" from="Panel/Margin/Colunas/Esquerda/HospedarLocal" to="." method="_on_hospedar_local_pressed"]
 [connection signal="pressed" from="Panel/Margin/Colunas/Esquerda/EntrarLocal" to="." method="_on_entrar_local_pressed"]
 [connection signal="pressed" from="Panel/Margin/Colunas/Esquerda/ConectarLocal" to="." method="_on_conectar_local_pressed"]
