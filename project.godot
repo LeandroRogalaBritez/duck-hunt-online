@@ -14,15 +14,13 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 [application]
 
-config/name="Duck hunt"
+config/name="Alerta: Terra"
 run/main_scene="res://scenes/lobby/lobby.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
-config/icon="res://icon.svg"
+config/icon="res://assets/alien/art/game_icon.png"
 
 [autoload]
 
-; OnlineNetworkManager vem antes: o _ready() do GameManager se inscreve
-; nos sinais dele.
 OnlineNetworkManager="*res://scenes/network/online_network_manager.gd"
 GameManager="*res://scenes/gamemanager.gd"
 

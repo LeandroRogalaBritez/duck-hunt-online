@@ -14,18 +14,18 @@ enum Modo { SOZINHO, LOCAL, ONLINE }
 
 const PORTA_LOCAL := 8910
 const MAX_PLAYERS := 4
-const MAX_PATOS := 2
+const MAX_ETS := 2
 
 # Variaveis Publicas
 var peer
-var alvo = true
+var agente = true
 var modo_multiplayer = false
 var modo: Modo = Modo.SOZINHO
-var players_patos = []
+var et_players = []
 
 # Variaveis Privadas
 var _player_nome
-var _quantidade_patos = 0
+var _quantidade_ets = 0
 # Uma queda gera mais de um aviso (peer_disconnected(1) e server_disconnected
 # no mesmo poll, mais o host_left do signaling). Sem isto o jogador levava
 # dois avisos e duas trocas de cena pela mesma desconexão.
@@ -33,7 +33,7 @@ var _encerrando := false
 # Último recado, pro lobby mostrar quando ele ainda nem existia na hora.
 var mensagem_pendente := ""
 var _players_dicionario: Dictionary = {}
-# Peers que já reportaram ter carregado a própria cópia de main.tscn (e
+# Peers que já reportaram ter carregado a própria cópia de invasion_match.tscn (e
 # portanto os próprios MultiplayerSpawners). Um spawn enviado a um peer cujo
 # spawner ainda não existe é simplesmente descartado, e nada reenvia depois.
 var _peers_prontos: Dictionary = {}
@@ -78,24 +78,24 @@ func _preparar_nova_sessao() -> void:
 	_reset()
 	_encerrando = false
 
-func jogar_sozinho(_nome) -> void:
+func jogar_sozinho(_nome, _agente: bool = true) -> void:
 	_preparar_nova_sessao()
 	modo = Modo.SOZINHO
 	modo_multiplayer = false
-	alvo = true
+	agente = _agente
 	_player_nome = _nome
 
-func hospedar_local(_nome) -> void:
+func hospedar_local(_nome, _porta: int = PORTA_LOCAL) -> void:
 	_preparar_nova_sessao()
 	modo = Modo.LOCAL
 	modo_multiplayer = true
-	alvo = true
+	agente = true
 	_player_nome = _nome
 	var _novo := ENetMultiplayerPeer.new()
 	# Bind padrão ("*", todas as interfaces). Antes isto usava o texto do
 	# campo de IP, que com o default 127.0.0.1 prendia o servidor no loopback
 	# e impedia qualquer peer da LAN de chegar.
-	var err := _novo.create_server(PORTA_LOCAL, MAX_PLAYERS - 1)
+	var err := _novo.create_server(_porta, MAX_PLAYERS - 1)
 	if err != OK:
 		conexao_falhou.emit("Falha ao hospedar na porta %d (erro %d)" % [PORTA_LOCAL, err])
 		return
@@ -103,14 +103,14 @@ func hospedar_local(_nome) -> void:
 	multiplayer.multiplayer_peer = peer
 	_registrar_host()
 
-func entrar_local(_ip, _alvo, _nome) -> void:
+func entrar_local(_ip, _agente, _nome, _porta: int = PORTA_LOCAL) -> void:
 	_preparar_nova_sessao()
 	modo = Modo.LOCAL
 	modo_multiplayer = true
-	alvo = _alvo
+	agente = _agente
 	_player_nome = _nome
 	var _novo := ENetMultiplayerPeer.new()
-	var err := _novo.create_client(_ip, PORTA_LOCAL)
+	var err := _novo.create_client(_ip, _porta)
 	if err != OK:
 		conexao_falhou.emit("Falha ao conectar em %s:%d (erro %d)" % [_ip, PORTA_LOCAL, err])
 		return
@@ -121,15 +121,15 @@ func hospedar_online(_sala, _nome) -> void:
 	_preparar_nova_sessao()
 	modo = Modo.ONLINE
 	modo_multiplayer = true
-	alvo = true
+	agente = true
 	_player_nome = _nome
 	OnlineNetworkManager.host_online(_sala)
 
-func entrar_online(_sala, _alvo, _nome) -> void:
+func entrar_online(_sala, _agente, _nome) -> void:
 	_preparar_nova_sessao()
 	modo = Modo.ONLINE
 	modo_multiplayer = true
-	alvo = _alvo
+	agente = _agente
 	_player_nome = _nome
 	OnlineNetworkManager.join_online(_sala)
 
@@ -147,7 +147,7 @@ func _on_peer_connected(_id: int) -> void:
 		# Gatilho único do handshake, idêntico em ENet e WebRTC: no ENet
 		# chega quando o cliente conecta no servidor; na malha WebRTC, quando
 		# o canal de dados com o peer 1 abre de verdade.
-		set_player_name.rpc_id(1, _player_nome, alvo)
+		set_player_name.rpc_id(1, _player_nome, agente)
 
 func _on_peer_disconnected(_id: int) -> void:
 	if _id == 1 and not multiplayer.is_server():
@@ -163,44 +163,53 @@ func _registrar_host() -> void:
 	_gera_dicionario_player(multiplayer.get_unique_id(), _player_nome, "true")
 	_update_players_dicionario.rpc(_players_dicionario)
 
-func _gera_dicionario_player(_id, _nome, _alvo):
-	_players_dicionario[str(_id)] = {"nome": _nome, "alvo": _alvo}
+func _gera_dicionario_player(_id, _nome, _agente):
+	_players_dicionario[str(_id)] = {"nome": _nome, "agente": _agente}
 
 @rpc("any_peer", "reliable")
-func set_player_name(_player_name: String, _alvo: bool):
+func set_player_name(_player_name: String, _agente: bool):
 	if not multiplayer.is_server():
 		return
 	var _id := multiplayer.get_remote_sender_id()
-	if !_alvo:
-		if _quantidade_patos >= MAX_PATOS:
+	if _id <= 1 or _players_dicionario.has(str(_id)) or _players_dicionario.size() >= MAX_PLAYERS:
+		return
+	_player_name = _player_name.strip_edges().left(32)
+	if !_agente:
+		if _quantidade_ets >= MAX_ETS:
 			_gera_dicionario_player(_id, _player_name, "true")
-			_muda_para_alvo.rpc_id(_id)
+			_muda_para_agente.rpc_id(_id)
 			_update_players_dicionario.rpc(_players_dicionario)
 			return
-		_quantidade_patos += 1
+		_quantidade_ets += 1
 		_gera_dicionario_player(_id, _player_name, "false")
 		_update_players_dicionario.rpc(_players_dicionario)
 	else:
 		_gera_dicionario_player(_id, _player_name, "true")
 		_update_players_dicionario.rpc(_players_dicionario)
 
-@rpc("any_peer", "reliable")
-func _muda_para_alvo():
-	_avisar("Limite de patos atingido — você entrou como ALVO.")
-	alvo = true
+@rpc("authority", "reliable")
+func _muda_para_agente():
+	_avisar("As duas vagas de ET estão ocupadas. Você entrou como AGENTE.")
+	agente = true
 
-@rpc("any_peer", "call_local", "reliable")
+@rpc("authority", "call_local", "reliable")
 func _update_players_dicionario(_players_dicionario_novo):
 	self._players_dicionario = _players_dicionario_novo
 	roster_atualizado.emit(_players_dicionario_novo)
 
-func get_nome_jogavel(_alvo) -> String:
-	if _alvo == "true":
-		return "ALVO"
-	return "PATO"
+func get_nome_jogavel(_agente) -> String:
+	if _agente == "true":
+		return "AGENTE"
+	return "ET"
 
 func total_jogadores() -> int:
 	return _players_dicionario.size()
+
+func get_roster() -> Dictionary:
+	var roster := _players_dicionario.duplicate(true)
+	for id in roster:
+		roster[id]["agente"] = roster[id]["agente"] == "true"
+	return roster
 
 func remove_player(_id = 1):
 	if not _players_dicionario.has(str(_id)):
@@ -209,24 +218,24 @@ func remove_player(_id = 1):
 
 	# O valor é a string "true"/"false", e toda string não-vazia é truthy em
 	# GDScript — comparar direto decrementava o contador pra qualquer saída,
-	# inclusive de ALVO.
-	if _players_dicionario[str(_id)]["alvo"] == "false":
-		_quantidade_patos -= 1
+	# inclusive de AGENTE.
+	if _players_dicionario[str(_id)]["agente"] == "false":
+		_quantidade_ets -= 1
 
 	_players_dicionario.erase(str(_id))
 	_peers_prontos.erase(_id)
 
-	# find() devolve -1 pra quem é ALVO; remove_at(-1) tirava o último pato.
-	var _i = players_patos.find(str(_id))
+	# find() devolve -1 pra quem é AGENTE; remove_at(-1) tirava o último ET.
+	var _i = et_players.find(str(_id))
 	if _i != -1:
-		players_patos.remove_at(_i)
+		et_players.remove_at(_i)
 
 	_update_players_dicionario.rpc(_players_dicionario)
 
 # ---------- Sincronização da entrada no jogo ----------
 
 # Cada peer avisa, junto com o papel que escolheu, quando o _ready() de
-# main.tscn rodou. O host segura os spawns até todo mundo ter avisado: um
+# invasion_match.tscn rodou. O host segura os spawns até todo mundo ter avisado: um
 # spawn enviado a um peer cujo MultiplayerSpawner ainda não existe é
 # descartado em silêncio, e nada reenvia depois.
 #
@@ -234,12 +243,19 @@ func remove_player(_id = 1):
 # resolve em todo peer o tempo todo, então o aviso não se perde só porque
 # quem recebe ainda não trocou de cena.
 @rpc("any_peer", "call_local", "reliable")
-func notificar_pronto(_id: int, _e_alvo: bool) -> void:
+func notificar_pronto(_id: int, _e_agente: bool) -> void:
 	if not multiplayer.is_server():
 		return
-	_peers_prontos[_id] = _e_alvo
-	if not _e_alvo and not players_patos.has(str(_id)):
-		players_patos.append(str(_id))
+	var sender := multiplayer.get_remote_sender_id()
+	if sender != 0 and sender != _id:
+		return
+	if modo != Modo.SOZINHO and not _players_dicionario.has(str(_id)):
+		return
+	if modo != Modo.SOZINHO:
+		_e_agente = _players_dicionario[str(_id)]["agente"] == "true"
+	_peers_prontos[_id] = _e_agente
+	if not _e_agente and not et_players.has(str(_id)):
+		et_players.append(str(_id))
 	if todos_peers_prontos():
 		_anunciar_todos_prontos.rpc()
 
@@ -257,7 +273,7 @@ func todos_peers_prontos() -> bool:
 func peers_prontos_ids() -> Array:
 	return _peers_prontos.keys()
 
-func peer_e_alvo(_id: int) -> bool:
+func peer_e_agente(_id: int) -> bool:
 	return bool(_peers_prontos.get(_id, true))
 
 # ---------- Desconexão e limpeza ----------
@@ -349,9 +365,9 @@ func _reset():
 	modo = Modo.SOZINHO
 	modo_multiplayer = false
 	peer = null
-	alvo = true
+	agente = true
 	_players_dicionario = {}
 	_peers_prontos = {}
 	_player_nome = null
-	players_patos = []
-	_quantidade_patos = 0
+	et_players = []
+	_quantidade_ets = 0
