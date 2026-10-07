@@ -23,14 +23,14 @@ extends Node
 const SIGNALING_URL := "wss://signal-server-webrtc.onrender.com"
 
 # Permite apontar pra um servidor local durante os testes
-# (ex: ALERTA_TERRA_SIGNALING_URL=ws://127.0.0.1:3000) sem editar a constante.
+# (ex: DUCKHUNT_SIGNALING_URL=ws://127.0.0.1:3000) sem editar a constante.
 func _url() -> String:
-	var env := OS.get_environment("ALERTA_TERRA_SIGNALING_URL")
+	var env := OS.get_environment("DUCKHUNT_SIGNALING_URL")
 	return env if env != "" else SIGNALING_URL
 
 # Namespaceia o código da sala no servidor, que é compartilhado com o
 # project-adventure. Sem isso, "sala1" dos dois jogos seria a mesma sala.
-const APP_ID := "alerta-terra"
+const APP_ID := "duckhunt"
 
 const MAX_PEERS := 4
 
@@ -283,12 +283,7 @@ func _registrar(peer_id: String, godot_id: int) -> void:
 
 func _montar_malha(meu_id: int) -> void:
 	_rtc = WebRTCMultiplayerPeer.new()
-	# RPC channel 1 carries reliable gameplay events; channel 0 retains the
-	# built-in reliable/unreliable/ordered channels used by movement and roster.
-	var err := _rtc.create_mesh(meu_id, [MultiplayerPeer.TRANSFER_MODE_RELIABLE])
-	if err != OK:
-		_falhar("Não foi possível criar a malha WebRTC")
-		return
+	_rtc.create_mesh(meu_id)
 	multiplayer.multiplayer_peer = _rtc
 
 func _criar_conexao(peer_id: String, inicia: bool) -> void:

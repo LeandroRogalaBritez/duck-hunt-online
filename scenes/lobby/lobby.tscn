@@ -1,8 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://cdlr0shfglc0q"]
+[gd_scene load_steps=2 format=3 uid="uid://cdlr0shfglc0q"]
 
 [ext_resource type="Script" path="res://scenes/lobby/lobby.gd" id="1_8te2m"]
-[ext_resource type="Theme" path="res://scenes/invasion/invasion_theme.tres" id="2"]
-[ext_resource type="Texture2D" path="res://assets/alien/art/city_night.png" id="3"]
 
 [node name="Lobby" type="Control"]
 layout_mode = 3
@@ -12,20 +10,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_8te2m")
-theme = ExtResource("2")
-
-[node name="Background" type="TextureRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("3")
-expand_mode = 1
-stretch_mode = 6
-modulate = Color(0.4, 0.5, 0.75, 1)
 
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 1
@@ -34,8 +18,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-self_modulate = Color(1, 1, 1, 0.75)
 
 [node name="Margin" type="MarginContainer" parent="Panel"]
 layout_mode = 1
@@ -60,9 +42,7 @@ theme_override_constants/separation = 6
 
 [node name="Titulo" type="Label" parent="Panel/Margin/Colunas/Esquerda"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 27
-theme_override_colors/font_color = Color(0.4, 0.9, 0.88, 1)
-text = "ALERTA: TERRA"
+text = "DUCK HUNT"
 horizontal_alignment = 1
 
 [node name="LabelNome" type="Label" parent="Panel/Margin/Colunas/Esquerda"]
@@ -76,7 +56,7 @@ placeholder_text = "Player1"
 
 [node name="LabelPapel" type="Label" parent="Panel/Margin/Colunas/Esquerda"]
 layout_mode = 2
-text = "Papel (anfitrião é Agente)"
+text = "Papel (só vale pra quem entra)"
 
 [node name="OptionPapel" type="OptionButton" parent="Panel/Margin/Colunas/Esquerda"]
 layout_mode = 2
